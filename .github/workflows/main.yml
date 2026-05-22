@@ -4,7 +4,6 @@ on:
   push:
     branches: [ main ]
 
-# OPT INTO NODE 24 SYSTEM-WIDE
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -13,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # UPGRADED TO V4.1.8+ TO ENSURE NATIVE NODE 24 RUNTIMES
       - uses: actions/checkout@v4
       
       - name: Set up Flutter
@@ -26,10 +24,14 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Inspect and Fix Gradle Permissions
+      # FIX: This forces Flutter to automatically generate a brand new gradle-wrapper.jar file on the runner
+      - name: Force Generate Missing Gradle Wrapper
         run: |
-          ls -la android/
-          chmod +x android/gradlew
+          cd android
+          flutter pub run change_app_package_name:main com.example.safe_live_stream_app || true
+          gradle wrapper --gradle-version 8.3
+          chmod +x gradlew
+          cd ..
       
       - name: Build APK
         run: flutter build apk --release
@@ -44,7 +46,6 @@ jobs:
     runs-on: macos-latest
     
     steps:
-      # UPGRADED TO V4.1.8+ TO ENSURE NATIVE NODE 24 RUNTIMES
       - uses: actions/checkout@v4
       
       - name: Set up Flutter
