@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Overwrite clean pubspec
       - name: Force Overwrite Clean Pubspec
         run: |
           cat << 'EOF' > pubspec.yaml
@@ -83,19 +84,19 @@ jobs:
             echo "import 'dart:async';" | cat - lib/services/iap_service.dart > temp && mv temp lib/services/iap_service.dart
           fi
 
-      # FIXED: Creates a placeholder assets directory and mock JSON data files on the runner
       - name: Create Missing Placeholder Asset Files
         run: |
           mkdir -p assets
           echo "{}" > assets/global_moderation_config.json
           echo "[]" > assets/vision_trigger_list.json
 
-      # --- ANDROID BUILD STAGE ---
-      - name: Regenerate Android Tooling
+      # FIXED: Recreates BOTH android and ios native platforms at the same time
+      - name: Regenerate Native Mobile Project Tooling
         run: |
-          rm -rf android
-          flutter create . --platforms=android --project-name=safe_live_stream_app
+          rm -rf android ios
+          flutter create . --platforms=android,ios --project-name=safe_live_stream_app
       
+      # --- ANDROID BUILD STAGE ---
       - name: Inject Android Target SDK Build Flags
         run: |
           echo "flutter.compileSdkVersion=35" >> android/local.properties
