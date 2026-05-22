@@ -1,148 +1,3 @@
-Here is your updated `main.dart` file.
-
-### Key Improvements Integrated:
-
-1. **Asynchronous Initialization Guard:** Replaced the short-hand `void main() => runApp(...)` statement with an explicit async execution block incorporating `WidgetsFlutterBinding.ensureInitialized()`. This prevents native communication channel black-screen hangs on newer operating systems.
-2. **Android 15 Edge-to-Edge System Layout Layout Alignment:** Wrapped the root tree elements of both your `LoginScreen` and your primary `Dashboard` inside reactive `SafeArea` components. This forcefully clamps your application views inside physical hardware safe-boundaries, keeping text, fields, and action headers from sliding under device status overlays.
-
-```dart
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:http/http.dart' as http;
-import 'services/global_moderator.dart';
-import 'services/iap_service.dart';
-
-void main() async {
-  // Mandatory Guard: Initializes native platform layers securely before running UI code
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(SafeStreamApp());
-}
-
-class SafeStreamApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(brightness: Brightness.dark, primarySwatch: Colors.red),
-      home: LoginScreen(),
-    );
-  }
-}
-
-// --- AUTHENTICATION SCREEN ---
-class LoginScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // Wrapped in SafeArea to protect layout integrity on Android 15+ devices
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.security, size: 80, color: Colors.redAccent),
-                SizedBox(height: 20),
-                Text("SafeStream AI", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-                Text("Global Live Moderation", style: TextStyle(color: Colors.grey)),
-                SizedBox(height: 50),
-                _socialButton("Continue with Google", Icons.login, Colors.white, Colors.black, () {}),
-                SizedBox(height: 12),
-                _socialButton("Continue with Facebook", Icons.facebook, Colors.blueAccent, Colors.white, () {}),
-                SizedBox(height: 12),
-                _socialButton("Continue with X", Icons.close, Colors.black, Colors.white, () {}),
-                SizedBox(height: 30),
-                TextButton(
-                  child: Text("Enter Dashboard (Demo Mode)"),
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (c) => Dashboard())),
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _socialButton(String text, IconData icon, Color bg, Color txt, VoidCallback tap) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(backgroundColor: bg, foregroundColor: txt, padding: EdgeInsets.all(16)),
-        icon: Icon(icon),
-        label: Text(text),
-        onPressed: tap,
-      ),
-    );
-  }
-}
-
-// --- ENCRYPTED MODERATION LOG (2026 IT RULES COMPLIANCE) ---
-class ModerationLogger {
-  List<Map<String, dynamic>> encryptedLogs = [];
-  
-  String _encryptMessage(String message) {
-    return base64Encode(utf8.encode(message));
-  }
-  
-  String _decryptMessage(String encrypted) {
-    return utf8.decode(base64Decode(encrypted));
-  }
-  
-  void logAction(String userId, String message, String violation) {
-    final timestamp = DateTime.now().toIso8601String();
-    final logEntry = {
-      "time": timestamp,
-      "user_id": userId,
-      "content": _encryptMessage(message),
-      "violation": violation,
-      "action": "DELETED_WITHIN_120_SECONDS",
-      "compliance_tag": "2026_IT_RULES",
-      "encrypted": true
-    };
-    
-    encryptedLogs.add(logEntry);
-    print("🔐 LEGAL LOG CREATED (ENCRYPTED): ${logEntry['time']} | User: ${logEntry['user_id']} | Violation: ${logEntry['violation']}");
-  }
-  
-  Map<String, dynamic> getDecryptedLog(int index) {
-    if (index < 0 || index >= encryptedLogs.length) return {};
-    
-    final log = encryptedLogs[index];
-    return {
-      "time": log["time"],
-      "user_id": log["user_id"],
-      "content": _decryptMessage(log["content"]),
-      "violation": log["violation"],
-      "action": log["action"],
-      "compliance_tag": log["compliance_tag"]
-    };
-  }
-  
-  List<Map<String, dynamic>> getAllDecryptedLogs() {
-    return encryptedLogs.map((log) {
-      return {
-        "time": log["time"],
-        "user_id": log["user_id"],
-        "content": _decryptMessage(log["content"]),
-        "violation": log["violation"],
-        "action": log["action"]
-      };
-    }).toList();
-  }
-  
-  int getLogsCount() => encryptedLogs.length;
-}
-
-// --- MODERATION DASHBOARD ---
-class Dashboard extends StatefulWidget {
-  @override
-  _DashboardState createState() => _DashboardState();
-}
-
 class _DashboardState extends State<Dashboard> {
   Map<String, dynamic>? config;
   List<Map<String, String>> logs = [];
@@ -153,11 +8,15 @@ class _DashboardState extends State<Dashboard> {
   late GlobalLanguageShield globalShield;
   late SubscriptionManager subscriptionManager;
   
+  // ✅ FIX: Instantiated once at the state level
+  late final TextEditingController _chatController;
+  
   final String backendUrl = "http://YOUR_BACKEND_SERVER_IP:5000/api/moderate";
 
   @override
   void initState() {
     super.initState();
+    _chatController = TextEditingController(); // ✅ FIX: Initialized here
     _initializeModules();
   }
 
@@ -182,7 +41,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _processMessage(String input) async {
-    if (input.isEmpty) return;
+    if (input.trim().isEmpty) return; // Cleaned up spaces
 
     bool isPremium = subscriptionManager.hasActiveSubscription();
     if (!isPremium && logs.length >= 15) {
@@ -319,19 +178,19 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildTestInput() {
-    TextEditingController controller = TextEditingController();
+    // ✅ FIX: Removed local variable allocation, using the permanent state variable
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
-        controller: controller,
+        controller: _chatController,
         decoration: InputDecoration(
           hintText: "Simulate live chat message...",
           suffixIcon: IconButton(
             icon: Icon(Icons.send),
             onPressed: () {
-              if (controller.text.isNotEmpty) {
-                _processMessage(controller.text);
-                controller.clear();
+              if (_chatController.text.isNotEmpty) {
+                _processMessage(_chatController.text);
+                _chatController.clear();
               }
             },
           ),
@@ -339,7 +198,7 @@ class _DashboardState extends State<Dashboard> {
         ),
         onSubmitted: (val) {
           _processMessage(val);
-          controller.clear();
+          _chatController.clear();
         },
       ),
     );
@@ -400,10 +259,9 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void dispose() {
+    _chatController.dispose(); // ✅ FIX: Properly clean up memory footprint
     globalShield.dispose();
     subscriptionManager.dispose();
     super.dispose();
   }
 }
-
-```
