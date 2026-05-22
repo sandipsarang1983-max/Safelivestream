@@ -123,13 +123,12 @@ jobs:
           perl -pi -e "s/plugins \{/plugins \{\n    id 'com.google.gms.google-services'/g" android/app/build.gradle
 
       - name: Compile Release APK
-      - name: Extract Signing Keys
+      - name: Build APK and Extract Keys
         run: |
           cd android
           ./gradlew signingReport
-
-      - name: Build APK
-        run: flutter build apk --release --no-tree-shake-icons
+          cd ..
+          flutter build apk --release --no-tree-shake-icons
       
       - name: Publish Android Artifact
         uses: actions/upload-artifact@v4
