@@ -31,7 +31,6 @@ jobs:
             firebase_auth: ^4.14.0
             cloud_firestore: ^4.14.0
             
-            # FIXED: Upgraded ML Kit suite to modern 0.12.0 ecosystem milestone
             google_mlkit_object_detection: ^0.12.0
             google_mlkit_commons: ^0.7.1
             google_mlkit_language_id: ^0.12.0
@@ -83,6 +82,13 @@ jobs:
         run: |
           rm -rf android
           flutter create . --platforms=android --project-name=safe_live_stream_app
+          
+      # FIXED: Force upgrade properties in the newly built wrapper for ML Kit compatibility
+      - name: Patch Native Android Target configurations
+        run: |
+          sed -i '' 's/compileSdk = .*/compileSdk = 35/g' android/app/build.gradle
+          sed -i '' 's/minSdk = .*/minSdk = 21/g' android/app/build.gradle
+          sed -i '' 's/targetSdk = .*/targetSdk = 35/g' android/app/build.gradle
       
       - name: Compile Release APK
         run: flutter build apk --release
