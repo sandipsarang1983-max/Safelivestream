@@ -108,12 +108,16 @@ jobs:
       # --- ANDROID BUILD STAGE ---
       - name: Inject Android Target SDK and Firebase Build Flags
         run: |
-          # 1. Recreate local.properties cleanly
-          echo "flutter.compileSdkVersion=35" > android/local.properties
+          # 1. Safely extract the default flutter.sdk path before updating local.properties
+          FLUTTER_PATH=$(grep 'flutter.sdk' android/local.properties | cut -d'=' -f2)
+          
+          # 2. Recreate local.properties cleanly with SDK flags and include the extracted flutter.sdk path
+          echo "flutter.sdk=$FLUTTER_PATH" > android/local.properties
+          echo "flutter.compileSdkVersion=35" >> android/local.properties
           echo "flutter.targetSdkVersion=35" >> android/local.properties
           echo "flutter.minSdkVersion=21" >> android/local.properties
           
-          # 2. Inject Google Services configuration file
+          # 3. Inject Google Services configuration file
           mkdir -p android/app
           if [ -f "./google-services.json.bak" ]; then
             cp ./google-services.json.bak android/app/google-services.json
@@ -121,7 +125,7 @@ jobs:
             echo '{"project_info":{"project_number":"12345","project_id":"mock-id","storage_bucket":"://appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123:android:123","android_client_info":{"package_name":"com.example.safe_live_stream_app"}},"api_key":[{"current_key":"mock_key"}],"services":{"appinvite_service":{"status":1}}}]}' > android/app/google-services.json
           fi
           
-          # 3. Format settings.gradle cleanly with the plugins block placed strictly at the top
+          # 4. Format settings.gradle cleanly with the plugins block placed strictly at the top
           cat << 'EOF' > android/settings.gradle
           pluginManagement {
               def flutterSdkPath = {
@@ -148,7 +152,7 @@ jobs:
           include ":app"
           EOF
 
-          # 4. Safely apply the plugin at the bottom of the application build file
+          # 5. Safely apply the plugin at the bottom of the application build file
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
 
       - name: Build APK and Extract Keys
