@@ -1,0 +1,19 @@
+<manifest xmlns:android="http://android.com">
+    <application
+        <!-- CHANGE THIS LINE FROM "io.flutter.app.FlutterApplication" TO: -->
+        android:name="${applicationName}"
+        android:label="safe_live_stream_app"
+        android:icon="@mipmap/ic_launcher">
+        
+        <!-- ADD THIS METADATA TAG INSIDE <application> IF IT DOES NOT EXIST -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+            
+        <activity
+            android:name=".MainActivity"
+            ... >
+            <!-- Your activity contents -->
+        </activity>
+    </application>
+</manifest>
