@@ -67,7 +67,6 @@ jobs:
                     weight: 700
           EOF
 
-      # FIXED: Force the workflow to download and prioritize Java 17 to bypass the jlink transformation bug
       - name: Set up Java Development Kit
         uses: actions/setup-java@v4
         with:
@@ -83,6 +82,13 @@ jobs:
       
       - name: Fetch Core Dependencies
         run: flutter pub get
+
+      # FIXED: This injects 'import 'dart:async';' to the very top of iap_service.dart to satisfy the StreamSubscription type definition
+      - name: Patch Missing Async Import in Source Code
+        run: |
+          if [ -f "lib/services/iap_service.dart" ]; then
+            echo "import 'dart:async';" | cat - lib/services/iap_service.dart > temp && mv temp lib/services/iap_service.dart
+          fi
 
       # --- ANDROID BUILD STAGE ---
       - name: Regenerate Android Tooling
