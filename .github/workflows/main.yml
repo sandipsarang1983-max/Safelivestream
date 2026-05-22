@@ -32,6 +32,7 @@ jobs:
             cloud_firestore: ^4.14.0
             
             google_mlkit_object_detection: ^0.12.0
+            # UPDATED: Replaced old version milestone with ^0.7.1
             google_mlkit_commons: ^0.7.1
             google_mlkit_language_id: ^0.12.0
             
@@ -111,31 +112,10 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
 
       # --- IOS BUILD STAGE ---
-      # FIXED: Overwrites the volatile default Podfile layout with a bulletproof custom structural schema
-      - name: Inject Custom Optimized iOS Podfile Configuration
+      - name: Inject iOS Deployment and Podfile Optimizations
         run: |
-          cat << 'EOF' > ios/Podfile
-          platform :ios, '15.5'
-
-          source 'https://github.com'
-
-          target 'Runner' do
-            use_frameworks!
-            use_modular_headers!
-
-            flutter_install_all_ios_pods File.dirname(File.expand_path(__FILE__))
-          end
-
-          post_install do |installer|
-            installer.pods_project.targets.each do |target|
-              flutter_additional_ios_build_settings(target)
-              target.build_configurations.each do |config|
-                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
-                config.build_settings['ENABLE_BITCODE'] = 'NO'
-              end
-            end
-          end
-          EOF
+          sed -i '' "s/# platform :ios, '12.0'/platform :ios, '15.5'/g" ios/Podfile
+          perl -pi -e "s/config.build_settings\['IPHONEOS_DEPLOYMENT_TARGET'\] = .*/config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'/g" ios/Podfile
           flutter pub get
 
       - name: Compile iOS Binaries
