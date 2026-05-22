@@ -33,7 +33,7 @@ jobs:
             
             # FIXED: Upgraded ML Kit suite to modern 0.12.0 ecosystem milestone
             google_mlkit_object_detection: ^0.12.0
-            google_mlkit_commons: ^0.12.0
+            google_mlkit_commons: ^0.7.1
             google_mlkit_language_id: ^0.12.0
             
             camera: ^0.10.5
