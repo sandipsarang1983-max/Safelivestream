@@ -108,11 +108,12 @@ jobs:
       # --- ANDROID BUILD STAGE ---
       - name: Inject Android Target SDK and Firebase Build Flags
         run: |
-          # Create local.properties cleanly without breaking Flutter SDK paths
+          # 1. Recreate local.properties cleanly
           echo "flutter.compileSdkVersion=35" > android/local.properties
           echo "flutter.targetSdkVersion=35" >> android/local.properties
           echo "flutter.minSdkVersion=21" >> android/local.properties
           
+          # 2. Inject Google Services configuration file
           mkdir -p android/app
           if [ -f "./google-services.json.bak" ]; then
             cp ./google-services.json.bak android/app/google-services.json
@@ -120,8 +121,34 @@ jobs:
             echo '{"project_info":{"project_number":"12345","project_id":"mock-id","storage_bucket":"://appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123:android:123","android_client_info":{"package_name":"com.example.safe_live_stream_app"}},"api_key":[{"current_key":"mock_key"}],"services":{"appinvite_service":{"status":1}}}]}' > android/app/google-services.json
           fi
           
-          # Safely append the Google services dependency configuration
-          echo "plugins { id 'com.google.gms.google-services' version '4.4.1' apply false }" >> android/settings.gradle
+          # 3. Format settings.gradle cleanly with the plugins block placed strictly at the top
+          cat << 'EOF' > android/settings.gradle
+          pluginManagement {
+              def flutterSdkPath = {
+                  def properties = new Properties()
+                  def propertiesFile = new File(settingsDir, "local.properties")
+                  if (propertiesFile.exists()) {
+                      propertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
+                  }
+                  def sdkPath = properties.getProperty("flutter.sdk")
+                  assert sdkPath != null, "flutter.sdk not set in local.properties"
+                  return sdkPath
+              }()
+
+              includeBuild("${flutterSdkPath}/packages/flutter_tools/gradle")
+          }
+
+          plugins {
+              id "dev.flutter.flutter-plugin-loader" version "1.0.0"
+              id "com.android.application" version "8.1.0" apply false
+              id "org.jetbrains.kotlin.android" version "1.8.22" apply false
+              id "com.google.gms.google-services" version "4.4.1" apply false
+          }
+
+          include ":app"
+          EOF
+
+          # 4. Safely apply the plugin at the bottom of the application build file
           echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
 
       - name: Build APK and Extract Keys
