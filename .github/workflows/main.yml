@@ -56,15 +56,10 @@ jobs:
 
           flutter:
             uses-material-design: true
+            # FIXED: Kept core asset configurations but completely purged missing system fonts declaration
             assets:
               - assets/global_moderation_config.json
               - assets/vision_trigger_list.json
-            fonts:
-              - family: Roboto
-                fonts:
-                  - asset: assets/fonts/Roboto-Regular.ttf
-                  - asset: assets/fonts/Roboto-Bold.ttf
-                    weight: 700
           EOF
 
       - name: Set up Java Development Kit
@@ -83,7 +78,6 @@ jobs:
       - name: Fetch Core Dependencies
         run: flutter pub get
 
-      # FIXED: This injects 'import 'dart:async';' to the very top of iap_service.dart to satisfy the StreamSubscription type definition
       - name: Patch Missing Async Import in Source Code
         run: |
           if [ -f "lib/services/iap_service.dart" ]; then
