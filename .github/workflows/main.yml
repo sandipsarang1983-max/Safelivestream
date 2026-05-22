@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Overwrite clean pubspec
       - name: Force Overwrite Clean Pubspec
         run: |
           cat << 'EOF' > pubspec.yaml
@@ -83,9 +84,16 @@ jobs:
           rm -rf android
           flutter create . --platforms=android --project-name=safe_live_stream_app
       
-      # FIXED: Removed brittle text search patching. Forced modern SDK targeting flags directly into compilation!
+      # FIXED: Appending the required compilation property variables natively to local.properties
+      - name: Inject Android Target SDK Build Flags
+        run: |
+          echo "flutter.compileSdkVersion=35" >> android/local.properties
+          echo "flutter.targetSdkVersion=35" >> android/local.properties
+          echo "flutter.minSdkVersion=21" >> android/local.properties
+
+      # FIXED: Reverted back to a clean, native build invocation script block
       - name: Compile Release APK
-        run: flutter build apk --release --compile-sdk=35 --target-sdk=35 --min-sdk=21
+        run: flutter build apk --release
       
       - name: Publish Android Artifact
         uses: actions/upload-artifact@v4
