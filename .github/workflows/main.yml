@@ -1,10 +1,7 @@
-
 name: Build APK & IPA
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
 jobs:
@@ -14,46 +11,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-          cache: gradle
-      
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.24.x'
+          flutter-version: '3.24.x' 
           architecture: x64
       
-      - name: Get Flutter packages
+      - name: Get dependencies
         run: flutter pub get
+
+      # FIXED: Added the pipe symbol '|' for multi-line execution
+      - name: Inspect and Fix Gradle Permissions
+        run: |
+          ls -la android/
+          chmod +x android/gradlew
       
-      - name: Make gradlew executable
-  run: |
-    ls -la android/
-    chmod +x android/gradlew
-    chmod +x android/gradlew.bat
+      - name: Build APK
+        run: flutter build apk --release
       
-      - name: Build Gradle wrapper
-  run: |
-    cd android
-    ./gradlew wrapper --gradle-version 7.6.1
-    cd .. ..
-      
-      - name: Build APK (Release)
-        run: flutter build apk --release --split-per-abi
-       env:
-          GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx4g'
-      
-      - name: Upload APK Artifacts
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SafeLivestream-APK
-          path: build/app/outputs/flutter-apk/
-          retention-days: 30
+          name: SafeLive-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
 
   build-ipa:
     runs-on: macos-latest
@@ -65,35 +46,24 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.24.x'
+          flutter-version: '3.24.x' 
           architecture: x64
       
-      - name: Get Flutter packages
+      - name: Get dependencies
         run: flutter pub get
       
-      - name: Fix iOS build issues
-        run: |
-          cd ios
-          rm -rf Pods Podfile.lock
-          pod repo update
-          pod install
-          cd ..
-      
-      - name: Build iOS (Release)
+      - name: Build iOS
         run: flutter build ios --release --no-codesign
       
       - name: Create IPA
         run: |
           cd build/ios/iphoneos
           mkdir -p Payload
-          cp -r Runner.app Payload/
-          zip -r SafeLivestream.ipa Payload/
-          mv SafeLivestream.ipa ../../../
-          cd ../../../
+          mv Runner.app Payload/Runner.app
+          zip -r Runner.ipa Payload/
       
-      - name: Upload IPA Artifacts
+      - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: SafeLivestream-IPA
-          path: SafeLivestream.ipa
-          retention-days: 30
+          name: SafeLive-IPA
+          path: build/ios/iphoneos/Runner.ipa
