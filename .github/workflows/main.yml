@@ -127,6 +127,8 @@ jobs:
         run: |
           cd android
           ./gradlew signingReport
+
+      - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
       
       - name: Publish Android Artifact
