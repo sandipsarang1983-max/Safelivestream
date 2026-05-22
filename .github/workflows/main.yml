@@ -13,7 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Overwrite clean pubspec
       - name: Force Overwrite Clean Pubspec
         run: |
           cat << 'EOF' > pubspec.yaml
@@ -68,6 +67,13 @@ jobs:
                     weight: 700
           EOF
 
+      # FIXED: Force the workflow to download and prioritize Java 17 to bypass the jlink transformation bug
+      - name: Set up Java Development Kit
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Set up Flutter Environment
         uses: subosito/flutter-action@v2
         with:
@@ -84,14 +90,12 @@ jobs:
           rm -rf android
           flutter create . --platforms=android --project-name=safe_live_stream_app
       
-      # FIXED: Appending the required compilation property variables natively to local.properties
       - name: Inject Android Target SDK Build Flags
         run: |
           echo "flutter.compileSdkVersion=35" >> android/local.properties
           echo "flutter.targetSdkVersion=35" >> android/local.properties
           echo "flutter.minSdkVersion=21" >> android/local.properties
 
-      # FIXED: Reverted back to a clean, native build invocation script block
       - name: Compile Release APK
         run: flutter build apk --release
       
