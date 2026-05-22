@@ -13,7 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # FIXED: Replaced base64 block with a 100% structurally validated text matrix
       - name: Force Overwrite Clean Pubspec
         run: |
           echo "bmFtZTogc2FmZV9saXZlX3N0cmVhbV9hcHAKZGVzY3JpcHRpb246IFNhZmVTdHJlYW0gQUkgLSBHbG9iYWwgTGl2ZSBNb2RlcmF0aW9uIHdpdGggTUwgVmlzaW9uIGZvciAyMDI2LgpwdWJsaXNoX3RvOiAnbm9uZScKdmVyc2lvbjogMS4wLjArMQoKZW52aXJvbm1lbnQ6CiAgc2RrOiAnPj0zLjAuMCA8NC4wLjAnCgpkZXBlbmRlbmNpZXM6CiAgZmx1dHRlcjoKICAgIHNkazogZmx1dHRlcgogIGZpcmViYXNlX2NvcmU6IF4yLjI0LjAKICBmaXJlYmFzZV9hdXRoOiBeNC4xNC4wCiAgY2xvdWRfZmlyZXN0b3JlOiBeNC4xNC4wCiAgZ29vZ2xlX21sa2l0X29iamVjdF9kZXRlY3Rpb246IF4wLjExLjAKICBnb29nbGVfbWxraXRfY29tbW9uczogXjAuMTEuMAogIGdvb2dsZV9tbGtpdF9sYW5ndWFnZV9pZDogXjAuMTEuMAogIGNhbWVyYTogXjAuMTAuNQogIGltYWdlX3BpY2tlcjogXjEuMC40CiAgaHR0cDogXjEuMS4wCiAgZGlvOiBeNS4zLjAKICBmbHV0dGVyX21hdGVyaWFsX2NvbG9yX3BpY2tlcjogXjEuMi4wCiAgaW50bDogXjAuMTkuMAogIGNyeXB0bzogXjMuMC4zCiAgZW5jcnlwdDogXjUuMC4zCiAgaW5fYXBwX3B1cmNoYXNlOiBeMy4yLjAKICBpbl9hcHBfcHVyY2hhc2VfYW5kcm9pZDogXjAuMy42CiAgaW5fYXBwX3B1cmNoYXNlX3N0b3Jla2l0OiBeMC4zLjE0CiAgY3VwZXJ0aW5vX2ljb25zOiBeMS4wLjIKICB1dWlkOiBeNC4wLjAKCmRldl9kZXBlbmRlbmNpZXM6CiAgZmx1dHRlcl90ZXN0OgogICAgc2RrOiBmbHV0dGVyCiAgZmx1dHRlcl9saW50czogXjMuMC4wCgpmbHV0dGVyOgogIHVzZXMtbWF0ZXJpYWwtZGVzaWduOiB0cnVlCiAgYXNzZXRzOgogICAgLSBhc3NldHMvZ2xvYmFsX21vZGVyYXRpb25fY29uZmlnLmpzb24KICAgIC0gYXNzZXRzL3Zpc2lvbl90cmlnZ2VyX2xpc3QuanNvbgogIGZvbnRzOgogICAgLSBmYW1pbHk6IFJvYm90bwogICAgICBmb250czoKICAgICAgICAtIGFzc2V0OiBhc3NldHMvZm9udHMvUm9ib3RvLVJlZ3VsYXIudHRmCiAgICAgICAgLSBhc3NldDogYXNzZXRzL2ZvbnRzL1JvYm90by1Cb2xkLnR0ZgogICAgICAgICAgd2VpZ2h0OiA3MDAK" | base64 -d > pubspec.yaml
@@ -34,6 +33,48 @@ jobs:
           flutter create . --platforms=android --project-name=safe_live_stream_app
       
       - name: Build APK
+        run: flutter build apk --release
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SafeLive-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  build-ipa:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Force Overwrite Clean Pubspec
+        run: |
+          echo "bmFtZTogc2FmZV9saXZlX3N0cmVhbV9hcHAKZGVzY3JpcHRpb246IFNhZmVTdHJlYW0gQUkgLSBHbG9iYWwgTGl2ZSBNb2RlcmF0aW9uIHdpdGggTUwgVmlzaW9uIGZvciAyMDI2LgpwdWJsaXNoX3RvOiAnbm9uZScKdmVyc2lvbjogMS4wLjArMQoKZW52aXJvbm1lbnQ6CiAgc2RrOiAnPj0zLjAuMCA8NC4wLjAnCgpkZXBlbmRlbmNpZXM6CiAgZmx1dHRlcjoKICAgIHNkazogZmx1dHRlcgogIGZpcmViYXNlX2NvcmU6IF4yLjI0LjAKICBmaXJlYmFzZV9hdXRoOiBeNC4xNC4wCiAgY2xvdWRfZmlyZXN0b3JlOiBeNC4xNC4wCiAgZ29vZ2xlX21sa2l0X29iamVjdF9kZXRlY3Rpb246IF4wLjExLjAKICBnb29nbGVfbWxraXRfY29tbW9uczogXjAuMTEuMAogIGdvb2dsZV9tbGtpdF9sYW5ndWFnZV9pZDogXjAuMTEuMAogIGNhbWVyYTogXjAuMTAuNQogIGltYWdlX3BpY2tlcjogXjEuMC40CiAgaHR0cDogXjEuMS4wCiAgZGlvOiBeNS4zLjAKICBmbHV0dGVyX21hdGVyaWFsX2NvbG9yX3BpY2tlcjogXjEuMi4wCiAgaW50bDogXjAuMTkuMAogIGNyeXB0bzogXjMuMC4zCiAgZW5jcnlwdDogXjUuMC4zCiAgaW5fYXBwX3B1cmNoYXNlOiBeMy4yLjAKICBpbl9hcHBfcHVyY2hhc2VfYW5kcm9pZDogXjAuMy42CiAgaW5fYXBwX3B1cmNoYXNlX3N0b3Jla2l0OiBeMC4zLjE0CiAgY3VwZXJ0aW5vX2ljb25zOiBeMS4wLjIKICB1dWlkOiBeNC4wLjAKCmRldl9kZXBlbmRlbmNpZXM6CiAgZmx1dHRlcl90ZXN0OgogICAgc2RrOiBmbHV0dGVyCiAgZmx1dHRlcl9saW50czogXjMuMC4wCgpmbHV0dGVyOgogIHVzZXMtbWF0ZXJpYWwtZGVzaWduOiB0cnVlCiAgYXNzZXRzOgogICAgLSBhc3NldHMvZ2xvYmFsX21vZGVyYXRpb25fY29uZmlnLmpzb24KICAgIC0gYXNzZXRzL3Zpc2lvbl90cmlnZ2VyX2xpc3QuanNvbgogIGZvbnRzOgogICAgLSBmYW1pbHk6IFJvYm90bwogICAgICBmb250czoKICAgICAgICAtIGFzc2V0OiBhc3NldHMvZm9udHMvUm9ib3RvLVJlZ3VsYXIudHRmCiAgICAgICAgLSBhc3NldDogYXNzZXRzL2ZvbnRzL1JvYm90by1Cb2xkLnR0ZgogICAgICAgICAgd2VpZ2h0OiA3MDAK" | base64 -d > pubspec.yaml
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.24.x' 
+          architecture: x64
+      
+      - name: Get dependencies
+        run: flutter pub get
+      
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
+      
+      - name: Create IPA
+        run: |
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          mv Runner.app Payload/Runner.app
+          zip -r Runner.ipa Payload/
+      
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: SafeLive-IPA
+          path: build/ios/iphoneos/Runner.ipa
         run: flutter build apk --release
       
       - name: Upload APK
