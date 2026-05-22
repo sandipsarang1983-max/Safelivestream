@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Colors.redByzantine ?? Colors.redAccent,
+          backgroundColor: Colors.redAccent, // FIXED: Corrected custom color compilation bug
           content: Text("Authentication Failed: $error"),
         ),
       );
