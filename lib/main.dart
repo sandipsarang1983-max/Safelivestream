@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  // FIXED: Corrected the initialization syntax so the compiler recognizes it properly
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
@@ -9,7 +8,7 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @key
+  @override // FIXED: Corrected from @key to @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter App',
@@ -17,7 +16,6 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      // FIXED: Points to the single, clean LoginScreen below
       home: const LoginScreen(),
     );
   }
@@ -28,7 +26,6 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // FIXED: Embedded SafeArea to prevent elements from sliding under Android 15 status bars
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -65,7 +62,6 @@ class Dashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // FIXED: Embedded SafeArea for systemic layout alignment
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
@@ -80,4 +76,4 @@ class Dashboard extends StatelessWidget {
       ),
     );
   }
-}void 
+} // FIXED: Ensured clean, isolated bracket termination to stop the EOF trailing error
