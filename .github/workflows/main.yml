@@ -24,14 +24,11 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      # FIX: This forces Flutter to automatically generate a brand new gradle-wrapper.jar file on the runner
-      - name: Force Generate Missing Gradle Wrapper
+      # FIX: Wipe out the corrupted configuration and let Flutter build a fresh, perfectly working Android wrapper
+      - name: Recreate Android Project Configuration
         run: |
-          cd android
-          flutter pub run change_app_package_name:main com.example.safe_live_stream_app || true
-          gradle wrapper --gradle-version 8.3
-          chmod +x gradlew
-          cd ..
+          rm -rf android
+          flutter create . --platforms=android
       
       - name: Build APK
         run: flutter build apk --release
