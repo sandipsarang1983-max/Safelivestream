@@ -12,10 +12,11 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # Firebase
+  # Firebase & Authentication
   firebase_core: ^2.24.0
   firebase_auth: ^4.14.0
   cloud_firestore: ^4.14.0
+  google_sign_in: ^6.2.1 # FIXED: Added missing live authentication dependency here
 
   # ML Kit for Vision & Object Detection
   google_mlkit_object_detection: ^0.11.0
@@ -50,97 +51,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
-
-flutter:
-  uses-material-design: true
-
-  assets:
-    - assets/global_moderation_config.json
-    - assets/vision_trigger_list.json
-
-  fonts:
-    - family: Roboto
-      fonts:
-        - asset: assets/fonts/Roboto-Regular.ttf
-        - asset: assets/fonts/Roboto-Bold.ttf
-          weight: 700
-  # Encryption
-  crypto: ^3.0.3
-  encrypt: ^5.0.3
-
-  # In-App Purchases
-  in_app_purchase: ^3.2.0
-  in_app_purchase_android: ^0.3.6
-  in_app_purchase_storekit: ^0.3.14
-
-  # Other
-  cupertino_icons: ^1.0.2
-  uuid: ^4.0.0
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^3.0.0
-
-flutter:
-  uses-material-design: true
-
-  assets:
-    - assets/global_moderation_config.json
-    - assets/vision_trigger_list.json
-
-  fonts:
-    - family: Roboto
-      fonts:
-        - asset: assets/fonts/Roboto-Regular.ttf
-        - asset: assets/fonts/Roboto-Bold.ttf
-          weight: 700
-
-  # Encryption
-  crypto: ^3.0.3
-  encrypt: ^5.0.3
-
-  # In-App Purchases
-  # FIXED: Added missing billing packages used in iap_service.dart
-  in_app_purchase: ^3.2.0
-  in_app_purchase_android: ^0.3.6
-  in_app_purchase_storekit: ^0.3.14
-
-  # Other
-  cupertino_icons: ^1.0.2
-  uuid: ^4.0.0
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
-  flutter_lints: ^3.0.0
-
-flutter:
-  uses-material-design: true
-
-  assets:
-    - assets/global_moderation_config.json
-    - assets/vision_trigger_list.json
-
-  fonts:
-    - family: Roboto
-      fonts:
-        - asset: assets/fonts/Roboto-Regular.ttf
-        - asset: assets/fonts/Roboto-Bold.ttf
-          weight: 700
-  crypto: ^3.0.3
-  encrypt: ^5.0.3
-
-  # Other
-  cupertino_icons: ^1.0.2
-  uuid: ^4.0.0
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
   flutter_lints: ^3.0.0
 
 flutter:
