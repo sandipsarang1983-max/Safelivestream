@@ -38,14 +38,14 @@ jobs:
     chmod +x android/gradlew.bat
       
       - name: Build Gradle wrapper
-        run: |
-          cd android
-          ./gradlew wrapper
-          cd ..
+  run: |
+    cd android
+    ./gradlew wrapper --gradle-version 7.6.1
+    cd .. ..
       
       - name: Build APK (Release)
         run: flutter build apk --release --split-per-abi
-        env:
+       env:
           GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx4g'
       
       - name: Upload APK Artifacts
