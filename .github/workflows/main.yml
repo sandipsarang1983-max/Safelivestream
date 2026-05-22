@@ -108,7 +108,8 @@ jobs:
       # --- ANDROID BUILD STAGE ---
       - name: Inject Android Target SDK and Firebase Build Flags
         run: |
-          echo "flutter.compileSdkVersion=35" >> android/local.properties
+          # Create local.properties cleanly without breaking Flutter SDK paths
+          echo "flutter.compileSdkVersion=35" > android/local.properties
           echo "flutter.targetSdkVersion=35" >> android/local.properties
           echo "flutter.minSdkVersion=21" >> android/local.properties
           
@@ -119,8 +120,9 @@ jobs:
             echo '{"project_info":{"project_number":"12345","project_id":"mock-id","storage_bucket":"://appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123:android:123","android_client_info":{"package_name":"com.example.safe_live_stream_app"}},"api_key":[{"current_key":"mock_key"}],"services":{"appinvite_service":{"status":1}}}]}' > android/app/google-services.json
           fi
           
-          perl -pi -e "s/plugins \{/plugins \{\n    id 'com.google.gms.google-services' version '4.4.1' apply false/g" android/settings.gradle
-          perl -pi -e "s/plugins \{/plugins \{\n    id 'com.google.gms.google-services'/g" android/app/build.gradle
+          # Safely append the Google services dependency configuration
+          echo "plugins { id 'com.google.gms.google-services' version '4.4.1' apply false }" >> android/settings.gradle
+          echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
 
       - name: Build APK and Extract Keys
         run: |
