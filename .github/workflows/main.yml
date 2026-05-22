@@ -27,13 +27,144 @@ jobs:
           echo "  firebase_core: ^2.24.0" >> pubspec.yaml
           echo "  firebase_auth: ^4.14.0" >> pubspec.yaml
           echo "  cloud_firestore: ^4.14.0" >> pubspec.yaml
+          
+          # FIXED UNIFIED VERSION ALIGNMENT (0.11.0 Ecosystem Suite)
           echo "  google_mlkit_object_detection: ^0.11.0" >> pubspec.yaml
-          echo "  google_mlkit_commons: ^0.6.1" >> pubspec.yaml
-          # FIXED: Changed from ^0.6.1 to ^0.6.0 to match the official repository version tracking
-          echo "  google_mlkit_language_id: ^0.6.0" >> pubspec.yaml
+          echo "  google_mlkit_commons: ^0.11.0" >> pubspec.yaml
+          echo "  google_mlkit_language_id: ^0.11.0" >> pubspec.yaml
+          
           echo "  camera: ^0.10.5" >> pubspec.yaml
           echo "  image_picker: ^1.0.4" >> pubspec.yaml
           echo "  http: ^1.1.0" >> pubspec.yaml
+          echo "  dio: ^5.3.0" >> pubspec.yaml
+          echo "  flutter_material_color_picker: ^1.2.0" >> pubspec.yaml
+          echo "  intl: ^0.19.0" >> pubspec.yaml
+          echo "  crypto: ^3.0.3" >> pubspec.yaml
+          echo "  encrypt: ^5.0.3" >> pubspec.yaml
+          echo "  in_app_purchase: ^3.2.0" >> pubspec.yaml
+          echo "  in_app_purchase_android: ^0.3.6" >> pubspec.yaml
+          echo "  in_app_purchase_storekit: ^0.3.14" >> pubspec.yaml
+          echo "  cupertino_icons: ^1.0.2" >> pubspec.yaml
+          echo "  uuid: ^4.0.0" >> pubspec.yaml
+          echo "dev_dependencies:" >> pubspec.yaml
+          echo "  flutter_test:" >> pubspec.yaml
+          echo "    sdk: flutter" >> pubspec.yaml
+          echo "  flutter_lints: ^3.0.0" >> pubspec.yaml
+          echo "flutter:" >> pubspec.yaml
+          echo "  uses-material-design: true" >> pubspec.yaml
+          echo "  assets:" >> pubspec.yaml
+          echo "    - assets/global_moderation_config.json" >> pubspec.yaml
+          echo "    - assets/vision_trigger_list.json" >> pubspec.yaml
+          echo "  fonts:" >> pubspec.yaml
+          echo "    - family: Roboto" >> pubspec.yaml
+          echo "      fonts:" >> pubspec.yaml
+          echo "        - asset: assets/fonts/Roboto-Regular.ttf" >> pubspec.yaml
+          echo "        - asset: assets/fonts/Roboto-Bold.ttf" >> pubspec.yaml
+          echo "          weight: 700" >> pubspec.yaml
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.24.x' 
+          architecture: x64
+      
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Recreate Android Project Configuration
+        run: |
+          rm -rf android
+          flutter create . --platforms=android --project-name=safe_live_stream_app
+      
+      - name: Build APK
+        run: flutter build apk --release
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SafeLive-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  build-ipa:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Force Overwrite Clean Pubspec
+        run: |
+          echo "name: safe_live_stream_app" > pubspec.yaml
+          echo "description: SafeStream AI - Global Live Moderation with ML Vision for 2026." >> pubspec.yaml
+          echo "publish_to: 'none'" >> pubspec.yaml
+          echo "version: 1.0.0+1" >> pubspec.yaml
+          echo "environment:" >> pubspec.yaml
+          echo "  sdk: '>=3.0.0 <4.0.0'" >> pubspec.yaml
+          echo "dependencies:" >> pubspec.yaml
+          echo "  flutter:" >> pubspec.yaml
+          echo "    sdk: flutter" >> pubspec.yaml
+          echo "  firebase_core: ^2.24.0" >> pubspec.yaml
+          echo "  firebase_auth: ^4.14.0" >> pubspec.yaml
+          echo "  cloud_firestore: ^4.14.0" >> pubspec.yaml
+          
+          # FIXED UNIFIED VERSION ALIGNMENT (0.11.0 Ecosystem Suite)
+          echo "  google_mlkit_object_detection: ^0.11.0" >> pubspec.yaml
+          echo "  google_mlkit_commons: ^0.11.0" >> pubspec.yaml
+          echo "  google_mlkit_language_id: ^0.11.0" >> pubspec.yaml
+          
+          echo "  camera: ^0.10.5" >> pubspec.yaml
+          echo "  image_picker: ^1.0.4" >> pubspec.yaml
+          echo "  http: ^1.1.0" >> pubspec.yaml
+          echo "  dio: ^5.3.0" >> pubspec.yaml
+          echo "  flutter_material_color_picker: ^1.2.0" >> pubspec.yaml
+          echo "  intl: ^0.19.0" >> pubspec.yaml
+          echo "  crypto: ^3.0.3" >> pubspec.yaml
+          echo "  encrypt: ^5.0.3" >> pubspec.yaml
+          echo "  in_app_purchase: ^3.2.0" >> pubspec.yaml
+          echo "  in_app_purchase_android: ^0.3.6" >> pubspec.yaml
+          echo "  in_app_purchase_storekit: ^0.3.14" >> pubspec.yaml
+          echo "  cupertino_icons: ^1.0.2" >> pubspec.yaml
+          echo "  uuid: ^4.0.0" >> pubspec.yaml
+          echo "dev_dependencies:" >> pubspec.yaml
+          echo "  flutter_test:" >> pubspec.yaml
+          echo "    sdk: flutter" >> pubspec.yaml
+          echo "  flutter_lints: ^3.0.0" >> pubspec.yaml
+          echo "flutter:" >> pubspec.yaml
+          echo "  uses-material-design: true" >> pubspec.yaml
+          echo "  assets:" >> pubspec.yaml
+          echo "    - assets/global_moderation_config.json" >> pubspec.yaml
+          echo "    - assets/vision_trigger_list.json" >> pubspec.yaml
+          echo "  fonts:" >> pubspec.yaml
+          echo "    - family: Roboto" >> pubspec.yaml
+          echo "      fonts:" >> pubspec.yaml
+          echo "        - asset: assets/fonts/Roboto-Regular.ttf" >> pubspec.yaml
+          echo "        - asset: assets/fonts/Roboto-Bold.ttf" >> pubspec.yaml
+          echo "          weight: 700" >> pubspec.yaml
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.24.x' 
+          architecture: x64
+      
+      - name: Get dependencies
+        run: flutter pub get
+      
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
+      
+      - name: Create IPA
+        run: |
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          mv Runner.app Payload/Runner.app
+          zip -r Runner.ipa Payload/
+      
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: SafeLive-IPA
+          path: build/ios/iphoneos/Runner.ipa
           echo "  dio: ^5.3.0" >> pubspec.yaml
           echo "  flutter_material_color_picker: ^1.2.0" >> pubspec.yaml
           echo "  intl: ^0.19.0" >> pubspec.yaml
