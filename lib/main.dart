@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Colors.redAccent, // FIXED: Corrected custom color compilation bug
+          backgroundColor: Colors.redAccent, // FIXED: Removed compile-breaking redByzantine variable completely
           content: Text("Authentication Failed: $error"),
         ),
       );
@@ -257,7 +257,6 @@ class _DashboardState extends State<Dashboard> {
   }
 }
 
-// INTEGRATED: 1-Week Free Trial followed by $1.00 USD/Month Marketing Block
 class SubscriptionPaywallScreen extends StatelessWidget {
   const SubscriptionPaywallScreen({super.key});
 
