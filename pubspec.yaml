@@ -65,6 +65,37 @@ flutter:
         - asset: assets/fonts/Roboto-Regular.ttf
         - asset: assets/fonts/Roboto-Bold.ttf
           weight: 700
+  # Encryption
+  crypto: ^3.0.3
+  encrypt: ^5.0.3
+
+  # In-App Purchases
+  in_app_purchase: ^3.2.0
+  in_app_purchase_android: ^0.3.6
+  in_app_purchase_storekit: ^0.3.14
+
+  # Other
+  cupertino_icons: ^1.0.2
+  uuid: ^4.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/global_moderation_config.json
+    - assets/vision_trigger_list.json
+
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700
 
   # Encryption
   crypto: ^3.0.3
