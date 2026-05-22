@@ -90,7 +90,6 @@ jobs:
           echo "{}" > assets/global_moderation_config.json
           echo "[]" > assets/vision_trigger_list.json
 
-      # FIXED: Recreates BOTH android and ios native platforms at the same time
       - name: Regenerate Native Mobile Project Tooling
         run: |
           rm -rf android ios
@@ -113,6 +112,11 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
 
       # --- IOS BUILD STAGE ---
+      # FIXED: Force-injecting iOS 15.5 platform rule explicitly into the newly generated Podfile configuration layout
+      - name: Inject iOS Deployment Target Flags
+        run: |
+          sed -i '' "s/# platform :ios, '12.0'/platform :ios, '15.5'/g" ios/Podfile
+
       - name: Compile iOS Binaries
         run: flutter build ios --release --no-codesign
       
