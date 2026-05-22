@@ -82,16 +82,10 @@ jobs:
         run: |
           rm -rf android
           flutter create . --platforms=android --project-name=safe_live_stream_app
-          
-      # FIXED: Force upgrade properties in the newly built wrapper for ML Kit compatibility
-      - name: Patch Native Android Target configurations
-        run: |
-          sed -i '' 's/compileSdk = .*/compileSdk = 35/g' android/app/build.gradle
-          sed -i '' 's/minSdk = .*/minSdk = 21/g' android/app/build.gradle
-          sed -i '' 's/targetSdk = .*/targetSdk = 35/g' android/app/build.gradle
       
+      # FIXED: Removed brittle text search patching. Forced modern SDK targeting flags directly into compilation!
       - name: Compile Release APK
-        run: flutter build apk --release
+        run: flutter build apk --release --compile-sdk=35 --target-sdk=35 --min-sdk=21
       
       - name: Publish Android Artifact
         uses: actions/upload-artifact@v4
