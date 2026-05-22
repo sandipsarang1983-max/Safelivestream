@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "805545458159",
+    "project_id": "safelive-app",
+    "storage_bucket": "safelive-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:805545458159:android:f7648b4411c13bc9185e1a",
+        "android_client_info": {
+          "package_name": "com.example.safe_live_stream_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRadvZB7UJjHBgXnmjLsOK-8_ZCuZLwtU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
