@@ -111,8 +111,15 @@ jobs:
       # --- ANDROID BUILD STAGE ---
       - name: Create default debug keystore
         run: |
+          # FIXED: Create directories explicitly to bridge paths between Keytool output maps and Gradle inputs
           mkdir -p ~/.android
-          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias AndroidDebugKey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          mkdir -p /home/runner/.config/.android
+          
+          # Inject the persistent key directly into the framework directory container
+          keytool -genkey -v -keystore /home/runner/.config/.android/debug.keystore -storepass android -alias AndroidDebugKey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          
+          # Maintain secondary fallback reference string layout
+          cp /home/runner/.config/.android/debug.keystore ~/.android/debug.keystore
 
       - name: Inject Android Target SDK and Firebase Build Flags
         run: |
@@ -138,7 +145,7 @@ jobs:
           pluginManagement {
               repositories {
                   google()
-                  mavenCentral() // FIXED: Changed from invalid mainCentral() to correct mavenCentral()
+                  mavenCentral()
                   gradlePluginPortal()
               }
               def flutterSdkPath = {
