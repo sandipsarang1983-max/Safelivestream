@@ -68,7 +68,8 @@ class LoginScreen extends StatelessWidget {
                   icon: const Icon(Icons.g_mobiledata, size: 30, color: Colors.red), 
                   label: const Text(
                     'Sign In with Google',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w640),
+                    // FIXED: Changed from invalid w640 to correct standard w600
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   onPressed: () => _handleGoogleSignIn(context),
                 ),
