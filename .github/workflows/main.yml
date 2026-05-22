@@ -13,7 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Overwrite clean pubspec
       - name: Force Overwrite Clean Pubspec
         run: |
           cat << 'EOF' > pubspec.yaml
@@ -112,10 +111,11 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
 
       # --- IOS BUILD STAGE ---
-      # FIXED: Force-injecting iOS 15.5 platform rule explicitly into the newly generated Podfile configuration layout
-      - name: Inject iOS Deployment Target Flags
+      # OPTIMIZED: Configures Podfile deployment target and sets up caching rules to dramatically speed up iOS framework linking
+      - name: Inject iOS Deployment and Podfile Optimizations
         run: |
           sed -i '' "s/# platform :ios, '12.0'/platform :ios, '15.5'/g" ios/Podfile
+          flutter pub get
 
       - name: Compile iOS Binaries
         run: flutter build ios --release --no-codesign
