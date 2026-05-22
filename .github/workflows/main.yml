@@ -9,7 +9,6 @@ env:
 
 jobs:
   build-apk:
-    # Ubuntu (Linux) optimized workspace runner environment
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +30,7 @@ jobs:
             firebase_core: ^2.24.0
             firebase_auth: ^4.14.0
             cloud_firestore: ^4.14.0
-            google_sign_in: ^6.2.1 # FIXED: Injected missing live auth library dependency into inline compiler generator
+            google_sign_in: ^6.2.1
             
             google_mlkit_object_detection: ^0.13.0
             google_mlkit_commons: ^0.7.1
@@ -78,12 +77,6 @@ jobs:
           channel: 'stable'
           flutter-version: '3.24.x' 
           architecture: x64
-      
-      - name: Clear Distrupted Cloud Build Cache
-        run: flutter clean # FIXED: Purges compilation memory maps holding onto internal build errors
-
-      - name: Fetch Core Dependencies
-        run: flutter pub get
 
       - name: Patch Missing Async Import in Source Code
         run: |
@@ -108,6 +101,12 @@ jobs:
         run: |
           rm -rf android
           flutter create . --platforms=android --project-name=safe_live_stream_app
+
+      - name: Clear Disrupted Cloud Build Cache
+        run: flutter clean
+
+      - name: Fetch Core Dependencies (Post-Recreation)
+        run: flutter pub get
       
       # --- ANDROID BUILD STAGE ---
       - name: Create default debug keystore
@@ -134,12 +133,12 @@ jobs:
             echo '{"project_info":{"project_number":"12345","project_id":"mock-id","storage_bucket":"://appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123:android:123","android_client_info":{"package_name":"com.example.safe_live_stream_app"}},"api_key":[{"current_key":"mock_key"}],"services":{"appinvite_service":{"status":1}}}]}' > android/app/google-services.json
           fi
           
-          # 4. Format settings.gradle with the repository downloader maps built inside
+          # 4. Format settings.gradle with corrected repository definitions
           cat << 'EOF' > android/settings.gradle
           pluginManagement {
               repositories {
                   google()
-                  mainCentral()
+                  mavenCentral() // FIXED: Changed from invalid mainCentral() to correct mavenCentral()
                   gradlePluginPortal()
               }
               def flutterSdkPath = {
