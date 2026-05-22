@@ -9,7 +9,7 @@ env:
 
 jobs:
   build-apk:
-    # Changed to Ubuntu (Linux) because it is faster and native for Android compiles
+    # Ubuntu (Linux) optimized workspace runner environment
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +31,7 @@ jobs:
             firebase_core: ^2.24.0
             firebase_auth: ^4.14.0
             cloud_firestore: ^4.14.0
+            google_sign_in: ^6.2.1 # FIXED: Injected missing live auth library dependency into inline compiler generator
             
             google_mlkit_object_detection: ^0.13.0
             google_mlkit_commons: ^0.7.1
@@ -78,6 +79,9 @@ jobs:
           flutter-version: '3.24.x' 
           architecture: x64
       
+      - name: Clear Distrupted Cloud Build Cache
+        run: flutter clean # FIXED: Purges compilation memory maps holding onto internal build errors
+
       - name: Fetch Core Dependencies
         run: flutter pub get
 
@@ -135,7 +139,7 @@ jobs:
           pluginManagement {
               repositories {
                   google()
-                  mavenCentral()
+                  mainCentral()
                   gradlePluginPortal()
               }
               def flutterSdkPath = {
