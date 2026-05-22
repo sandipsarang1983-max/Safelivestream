@@ -125,9 +125,14 @@ jobs:
             echo '{"project_info":{"project_number":"12345","project_id":"mock-id","storage_bucket":"://appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123:android:123","android_client_info":{"package_name":"com.example.safe_live_stream_app"}},"api_key":[{"current_key":"mock_key"}],"services":{"appinvite_service":{"status":1}}}]}' > android/app/google-services.json
           fi
           
-          # 4. Format settings.gradle cleanly with the plugins block placed strictly at the top
+          # 4. Format settings.gradle with the repository downloader maps built inside
           cat << 'EOF' > android/settings.gradle
           pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
               def flutterSdkPath = {
                   def properties = new Properties()
                   def propertiesFile = new File(settingsDir, "local.properties")
