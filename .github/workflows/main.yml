@@ -1,1 +1,98 @@
 
+name: Build APK & IPA
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: gradle
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.24.x'
+          architecture: x64
+      
+      - name: Get Flutter packages
+        run: flutter pub get
+      
+      - name: Fix Gradle permissions
+        run: |
+          chmod +x android/gradlew
+          chmod +x android/gradle/wrapper/gradle-wrapper.jar
+      
+      - name: Build Gradle wrapper
+        run: |
+          cd android
+          ./gradlew wrapper
+          cd ..
+      
+      - name: Build APK (Release)
+        run: flutter build apk --release --split-per-abi
+        env:
+          GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx4g'
+      
+      - name: Upload APK Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: SafeLivestream-APK
+          path: build/app/outputs/flutter-apk/
+          retention-days: 30
+
+  build-ipa:
+    runs-on: macos-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.24.x'
+          architecture: x64
+      
+      - name: Get Flutter packages
+        run: flutter pub get
+      
+      - name: Fix iOS build issues
+        run: |
+          cd ios
+          rm -rf Pods Podfile.lock
+          pod repo update
+          pod install
+          cd ..
+      
+      - name: Build iOS (Release)
+        run: flutter build ios --release --no-codesign
+      
+      - name: Create IPA
+        run: |
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r SafeLivestream.ipa Payload/
+          mv SafeLivestream.ipa ../../../
+          cd ../../../
+      
+      - name: Upload IPA Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: SafeLivestream-IPA
+          path: SafeLivestream.ipa
+          retention-days: 30
