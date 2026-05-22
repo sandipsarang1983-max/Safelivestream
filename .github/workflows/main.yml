@@ -13,10 +13,58 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # FIXED: Replaced base64 block with a clean, machine-verified UTF-8 compliant hash string
+      # FIXED: Swapped out broken base64 encoding for clean, literal text injection
       - name: Force Overwrite Clean Pubspec
         run: |
-          echo "bmFtZTogc2FmZV9saXZlX3N0cmVhbV9hcHAKZGVzY3JpcHRpb246IFNhZmVTdHJlYW0gQUkgLSBHbG9iYWwgTGl2ZSBNb2RlcmF0aW9uIHdpdGggTUwgVmlzaW9uIGZvciAyMDI2LgpwdWJsaXNoX3RvOiAnbm9uZScKdmVyc2lvbjogMS4wLjArMQoKZW52aXJvbm1lbnQ6CiAgc2RrOiAnPj0zLjAuMCA8NC4wLjAnCgpkZXBlbmRlbmNpZXM6CiAgZmx1dHRlcjoKICAgIHNkazogZmx1dHRlcgogIGZpcmViYXNlX2NvcmU6IF4yLjI0LjAKICBmaXJlYmFzZV9hdXRoOiBeNC4xNC4wCiAgY2xvdWRfZmlyZXN0b3JlOiBeNC4xNC4wCiAgZ29vZ2xlX21sa2l0X29iamVjdF9kZXRlY3Rpb246IF4wLjExLjAKICBnb29nbGVfbWxraXRfY29tbW9uczogXjAuNi4xCiAgZ29vZ2xlX21sa2l0X2xhbmd1YWdlX2lkOiBeMC42LjAKICBjYW1lcmE6IF4wLjEwLjUKICBpbWFnZV9waWNrZXI6IF4xLjAuNAogIGh0dHA6IF4xLjEuMAogIGRpbzogXjUuMy4wCiAgZmx1dHRlcl9tYXRlcmlhbF9jb2xvcl9waWNrZXI6IF4xLjIuMAogIGludGw6IF4wLjE5LjAKICBjcnlwdG86IF4zLjAuMwogIGVuY3J5cHQ6IF41LjAuMwogIGluX2FwcF9wdXJjaGFzZTogXjMuMi4wCiAgaW5fYXBwX3B1cmNoYXNlX2FuZHJvaWQ6IF4wLjMuNgogIGluX2FwcF9wdXJjaGFzZV9zdG9yZWtpdDogXjAuMy4xNAogIGN1cGVydGlub19pY29uczogXjEuMC4yCiAgdXVpZDogXjQuMC4wCgpkZXZfZGVwZW5kZW5jaWVzOgogIGZsdXR0ZXJfdGVzdDoKICAgIHNkazogZmx1dHRlcgogIGZsdXR0ZXJfbGludHM6IF4zLjAuMAoKZmx1dHRlcjoKICB1c2VzLW1hdGVyaWFsLWRlc2lnbjog0nJ1ZQogIGFzc2V0czoKICAgIC0gYXNzZXRzL2dsb2JhbF9tb2RlcmF0aW9uX2NvbmZpZy5qc29uCiAgICAtIGFzc2V0cy92aXNpb25fdHJpZ2dlcl9saXN0Lmpzb24KICBmb250czoKICAgIC0gZmFtaWx5OiBSb2JvdG8KICAgICAgZm9udHM6CiAgICAgICAgLSBhc3NldDogYXNzZXRzL2ZvbnRzL1JvYm90by1SZWd1bGFyLnR0ZgogICAgICAgIC0gYXNzZXQ6IGFzc2V0cy9mb250cy9Sb2JvdG8tQm9sZC50dGYKICAgICAgICAgIHdlaWdodDogNzAw" | base64 -d > pubspec.yaml
+          cat << 'EOF' > pubspec.yaml
+          name: safe_live_stream_app
+          description: SafeStream AI - Global Live Moderation with ML Vision for 2026.
+          publish_to: 'none'
+          version: 1.0.0+1
+
+          environment:
+            sdk: '>=3.0.0 <4.0.0'
+
+          dependencies:
+            flutter:
+              sdk: flutter
+            firebase_core: ^2.24.0
+            firebase_auth: ^4.14.0
+            cloud_firestore: ^4.14.0
+            google_mlkit_object_detection: ^0.11.0
+            google_mlkit_commons: ^0.6.1
+            google_mlkit_language_id: ^0.6.0
+            camera: ^0.10.5
+            image_picker: ^1.0.4
+            http: ^1.1.0
+            dio: ^5.3.0
+            flutter_material_color_picker: ^1.2.0
+            intl: ^0.19.0
+            crypto: ^3.0.3
+            encrypt: ^5.0.3
+            in_app_purchase: ^3.2.0
+            in_app_purchase_android: ^0.3.6
+            in_app_purchase_storekit: ^0.3.14
+            cupertino_icons: ^1.0.2
+            uuid: ^4.0.0
+
+          dev_dependencies:
+            flutter_test:
+              sdk: flutter
+            flutter_lints: ^3.0.0
+
+          flutter:
+            uses-material-design: true
+            assets:
+              - assets/global_moderation_config.json
+              - assets/vision_trigger_list.json
+            fonts:
+              - family: Roboto
+                fonts:
+                  - asset: assets/fonts/Roboto-Regular.ttf
+                  - asset: assets/fonts/Roboto-Bold.ttf
+                    weight: 700
+          EOF
 
       - name: Set up Flutter Environment
         uses: subosito/flutter-action@v2
