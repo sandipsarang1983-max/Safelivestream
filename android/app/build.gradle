@@ -28,8 +28,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     namespace "com.safestream.app"
-    // FIXED: Upgraded from 34 to 35 to satisfy your plugin dependencies
-    compileSdkVersion 35
+    compileSdkVersion 35 // FIXED: Upgraded to target Android 15 plugin rules cleanly
     ndkVersion "25.1.8937393"
 
     compileOptions {
@@ -48,8 +47,7 @@ android {
     defaultConfig {
         applicationId "com.safestream.app"
         minSdk 21
-        // FIXED: Upgraded from 34 to 35 to match compile version targets
-        targetSdkVersion 35
+        targetSdkVersion 35 // FIXED: Upgraded to prevent runtime compilation discrepancies
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
