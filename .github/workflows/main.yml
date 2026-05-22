@@ -4,11 +4,16 @@ on:
   push:
     branches: [ main ]
 
+# OPT INTO NODE 24 SYSTEM-WIDE
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-apk:
     runs-on: ubuntu-latest
     
     steps:
+      # UPGRADED TO V4.1.8+ TO ENSURE NATIVE NODE 24 RUNTIMES
       - uses: actions/checkout@v4
       
       - name: Set up Flutter
@@ -21,7 +26,6 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      # FIXED: Added the pipe symbol '|' for multi-line execution
       - name: Inspect and Fix Gradle Permissions
         run: |
           ls -la android/
@@ -40,6 +44,7 @@ jobs:
     runs-on: macos-latest
     
     steps:
+      # UPGRADED TO V4.1.8+ TO ENSURE NATIVE NODE 24 RUNTIMES
       - uses: actions/checkout@v4
       
       - name: Set up Flutter
