@@ -24,11 +24,11 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      # FIX: Wipe out the corrupted configuration and let Flutter build a fresh, perfectly working Android wrapper
+      # FIXED: Added the --project-name flag with a lowercase string to bypass folder name restrictions
       - name: Recreate Android Project Configuration
         run: |
           rm -rf android
-          flutter create . --platforms=android
+          flutter create . --platforms=android --project-name=safe_live_stream_app
       
       - name: Build APK
         run: flutter build apk --release
