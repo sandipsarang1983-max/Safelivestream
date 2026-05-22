@@ -29,7 +29,8 @@ jobs:
           echo "  cloud_firestore: ^4.14.0" >> pubspec.yaml
           echo "  google_mlkit_object_detection: ^0.11.0" >> pubspec.yaml
           echo "  google_mlkit_commons: ^0.6.1" >> pubspec.yaml
-          echo "  google_mlkit_language_id: ^0.6.1" >> pubspec.yaml
+          # FIXED: Changed from ^0.6.1 to ^0.6.0 to match the official repository version tracking
+          echo "  google_mlkit_language_id: ^0.6.0" >> pubspec.yaml
           echo "  camera: ^0.10.5" >> pubspec.yaml
           echo "  image_picker: ^1.0.4" >> pubspec.yaml
           echo "  http: ^1.1.0" >> pubspec.yaml
@@ -104,7 +105,8 @@ jobs:
           echo "  cloud_firestore: ^4.14.0" >> pubspec.yaml
           echo "  google_mlkit_object_detection: ^0.11.0" >> pubspec.yaml
           echo "  google_mlkit_commons: ^0.6.1" >> pubspec.yaml
-          echo "  google_mlkit_language_id: ^0.6.1" >> pubspec.yaml
+          # FIXED: Changed from ^0.6.1 to ^0.6.0 to match the official repository version tracking
+          echo "  google_mlkit_language_id: ^0.6.0" >> pubspec.yaml
           echo "  camera: ^0.10.5" >> pubspec.yaml
           echo "  image_picker: ^1.0.4" >> pubspec.yaml
           echo "  http: ^1.1.0" >> pubspec.yaml
