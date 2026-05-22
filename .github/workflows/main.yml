@@ -31,7 +31,6 @@ jobs:
             firebase_auth: ^4.14.0
             cloud_firestore: ^4.14.0
             
-            # FIXED ECOSYSTEM ALIGNMENT: Upgraded to 0.13.0 tier to match internal requirements
             google_mlkit_object_detection: ^0.13.0
             google_mlkit_commons: ^0.7.1
             google_mlkit_language_id: ^0.13.0
@@ -89,6 +88,70 @@ jobs:
           mkdir -p assets
           echo "{}" > assets/global_moderation_config.json
           echo "[]" > assets/vision_trigger_list.json
+
+      # Temporarily backs up your uploaded google-services.json file before wiping the folder
+      - name: Backup Firebase Configuration
+        run: |
+          if [ -f "android/app/google-services.json" ]; then
+            cp android/app/google-services.json ./google-services.json.bak
+          fi
+
+      - name: Regenerate Native Mobile Project Tooling
+        run: |
+          rm -rf android ios
+          flutter create . --platforms=android,ios --project-name=safe_live_stream_app
+      
+      # --- ANDROID BUILD STAGE ---
+      # FIXED: Injects Firebase using modern Gradle Declarative Plugins Block syntax
+      - name: Inject Android Target SDK and Firebase Build Flags
+        run: |
+          echo "flutter.compileSdkVersion=35" >> android/local.properties
+          echo "flutter.targetSdkVersion=35" >> android/local.properties
+          echo "flutter.minSdkVersion=21" >> android/local.properties
+          
+          # Restore Firebase Config file if it exists
+          if [ -f "./google-services.json.bak" ]; then
+            mkdir -p android/app
+            cp ./google-services.json.bak android/app/google-services.json
+          fi
+          
+          # 1. Add Firebase Google Services to top-level android/settings.gradle
+          perl -pi -e "s/plugins \{/plugins \{\n    id 'com.google.gms.google-services' version '4.4.1' apply false/g" android/settings.gradle
+          
+          # 2. Add Firebase Google Services to app-level android/app/build.gradle
+          perl -pi -e "s/plugins \{/plugins \{\n    id 'com.google.gms.google-services'/g" android/app/build.gradle
+
+      - name: Compile Release APK
+        run: flutter build apk --release
+      
+      - name: Publish Android Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SafeLive-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      # --- IOS BUILD STAGE ---
+      - name: Inject iOS Deployment and Podfile Optimizations
+        run: |
+          sed -i '' "s/# platform :ios, '12.0'/platform :ios, '15.5'/g" ios/Podfile
+          perl -pi -e "s/config.build_settings\['IPHONEOS_DEPLOYMENT_TARGET'\] = .*/config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'/g" ios/Podfile
+          flutter pub get
+
+      - name: Compile iOS Binaries
+        run: flutter build ios --release --no-codesign
+      
+      - name: Construct Final IPA Bundle
+        run: |
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          mv Runner.app Payload/Runner.app
+          zip -r Runner.ipa Payload/
+      
+      - name: Publish iOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SafeLive-IPA
+          path: build/ios/iphoneos/Runner.ipa
 
       # Temporarily backs up your uploaded google-services.json file before wiping the folder
       - name: Backup Firebase Configuration
