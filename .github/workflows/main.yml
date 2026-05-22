@@ -56,7 +56,6 @@ jobs:
 
           flutter:
             uses-material-design: true
-            # FIXED: Kept core asset configurations but completely purged missing system fonts declaration
             assets:
               - assets/global_moderation_config.json
               - assets/vision_trigger_list.json
@@ -83,6 +82,13 @@ jobs:
           if [ -f "lib/services/iap_service.dart" ]; then
             echo "import 'dart:async';" | cat - lib/services/iap_service.dart > temp && mv temp lib/services/iap_service.dart
           fi
+
+      # FIXED: Creates a placeholder assets directory and mock JSON data files on the runner
+      - name: Create Missing Placeholder Asset Files
+        run: |
+          mkdir -p assets
+          echo "{}" > assets/global_moderation_config.json
+          echo "[]" > assets/vision_trigger_list.json
 
       # --- ANDROID BUILD STAGE ---
       - name: Regenerate Android Tooling
