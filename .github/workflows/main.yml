@@ -122,7 +122,6 @@ jobs:
           perl -pi -e "s/plugins \{/plugins \{\n    id 'com.google.gms.google-services' version '4.4.1' apply false/g" android/settings.gradle
           perl -pi -e "s/plugins \{/plugins \{\n    id 'com.google.gms.google-services'/g" android/app/build.gradle
 
-      - name: Compile Release APK
       - name: Build APK and Extract Keys
         run: |
           cd android
