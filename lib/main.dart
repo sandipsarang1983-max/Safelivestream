@@ -58,7 +58,10 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
+      // FIXED: Added the explicit Web Client ID to eliminate duplicate profile conflicts
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        clientId: '805545458159-rbjualqcu8hcnh94j2g5d4hb8oa67mb5.apps.googleusercontent.com',
+      );
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       
       if (googleUser != null) {
@@ -193,7 +196,10 @@ class _DashboardState extends State<Dashboard> {
             icon: const Icon(Icons.logout, color: Colors.redAccent),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              await GoogleSignIn().signOut();
+              // FIXED: Explicitly scoped the logout listener configuration to clear token mappings
+              await GoogleSignIn(
+                clientId: '805545458159-rbjualqcu8hcnh94j2g5d4hb8oa67mb5.apps.googleusercontent.com',
+              ).signOut();
             },
           )
         ],
@@ -255,47 +261,3 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
   }
-}
-
-class SubscriptionPaywallScreen extends StatelessWidget {
-  const SubscriptionPaywallScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.star, size: 80, color: Colors.amber),
-              const SizedBox(height: 16),
-              const Text(
-                "Unlock Live Moderation",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                "Access all core filters completely free for your first 1 week trial. Followed by a continuous plan at just \$1.00 USD / month.",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: Colors.blue,
-                ),
-                onPressed: () {
-                  // Links out directly to your in_app_purchase package SKU mappings
-                },
-                child: const Text("Start My 7-Day Trial", style: TextStyle(color: Colors.white, fontSize: 16)),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
