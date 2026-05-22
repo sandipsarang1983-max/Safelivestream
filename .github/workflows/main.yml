@@ -8,12 +8,12 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  build-apps:
-    runs-on: macos-latest
+  build-apk:
+    # Changed to Ubuntu (Linux) because it is faster and native for Android compiles
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # FIXED: Force-injected a dependency_overrides block to smash open the version solution deadlock
       - name: Force Overwrite Clean Pubspec
         run: |
           cat << 'EOF' > pubspec.yaml
@@ -100,10 +100,10 @@ jobs:
             cp android/app/google-services.json ./google-services.json.bak
           fi
 
-      - name: Regenerate Native Mobile Project Tooling
+      - name: Regenerate Native Android Project Tooling
         run: |
-          rm -rf android ios
-          flutter create . --platforms=android,ios --project-name=safe_live_stream_app
+          rm -rf android
+          flutter create . --platforms=android --project-name=safe_live_stream_app
       
       # --- ANDROID BUILD STAGE ---
       - name: Inject Android Target SDK and Firebase Build Flags
@@ -130,26 +130,3 @@ jobs:
         with:
           name: SafeLive-APK
           path: build/app/outputs/flutter-apk/app-release.apk
-
-      # --- IOS BUILD STAGE ---
-      - name: Inject iOS Deployment and Podfile Optimizations
-        run: |
-          sed -i '' "s/# platform :ios, '12.0'/platform :ios, '15.5'/g" ios/Podfile
-          perl -pi -e "s/config.build_settings\['IPHONEOS_DEPLOYMENT_TARGET'\] = .*/config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'/g" ios/Podfile
-          flutter pub get
-
-      - name: Compile iOS Binaries
-        run: flutter build ios --release --no-codesign
-      
-      - name: Construct Final IPA Bundle
-        run: |
-          cd build/ios/iphoneos
-          mkdir -p Payload
-          mv Runner.app Payload/Runner.app
-          zip -r Runner.ipa Payload/
-      
-      - name: Publish iOS Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: SafeLive-IPA
-          path: build/ios/iphoneos/Runner.ipa
