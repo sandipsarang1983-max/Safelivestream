@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # FIXED: Force-injected a dependency_overrides block to smash open the version solution deadlock
       - name: Force Overwrite Clean Pubspec
         run: |
           cat << 'EOF' > pubspec.yaml
@@ -48,6 +49,9 @@ jobs:
             in_app_purchase_storekit: ^0.3.14
             cupertino_icons: ^1.0.2
             uuid: ^4.0.0
+
+          dependency_overrides:
+            google_mlkit_commons: ^0.7.1
 
           dev_dependencies:
             flutter_test:
@@ -89,7 +93,7 @@ jobs:
           echo "{}" > assets/global_moderation_config.json
           echo "[]" > assets/vision_trigger_list.json
 
-      # Backs up your custom config file if you upload it later
+      # Backs up your custom config file if it exists
       - name: Backup Firebase Configuration
         run: |
           if [ -f "android/app/google-services.json" ]; then
@@ -102,7 +106,6 @@ jobs:
           flutter create . --platforms=android,ios --project-name=safe_live_stream_app
       
       # --- ANDROID BUILD STAGE ---
-      # FIXED: Generates an automatic mock google-services.json profile to allow successful APK compilation
       - name: Inject Android Target SDK and Firebase Build Flags
         run: |
           echo "flutter.compileSdkVersion=35" >> android/local.properties
@@ -113,14 +116,12 @@ jobs:
           if [ -f "./google-services.json.bak" ]; then
             cp ./google-services.json.bak android/app/google-services.json
           else
-            # Inject a syntactically valid mock config file to satisfy the compiler requirements
             echo '{"project_info":{"project_number":"12345","project_id":"mock-id","storage_bucket":"://appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123:android:123","android_client_info":{"package_name":"com.example.safe_live_stream_app"}},"api_key":[{"current_key":"mock_key"}],"services":{"appinvite_service":{"status":1}}}]}' > android/app/google-services.json
           fi
           
           perl -pi -e "s/plugins \{/plugins \{\n    id 'com.google.gms.google-services' version '4.4.1' apply false/g" android/settings.gradle
           perl -pi -e "s/plugins \{/plugins \{\n    id 'com.google.gms.google-services'/g" android/app/build.gradle
 
-      # FIXED: Added the --no-tree-shake-icons flag to stabilize icon assets packaging compilation
       - name: Compile Release APK
         run: flutter build apk --release --no-tree-shake-icons
       
