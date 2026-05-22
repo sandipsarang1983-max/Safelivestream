@@ -31,10 +31,11 @@ jobs:
       - name: Get Flutter packages
         run: flutter pub get
       
-      - name: Fix Gradle permissions
-        run: |
-          chmod +x android/gradlew
-          chmod +x android/gradle/wrapper/gradle-wrapper.jar
+      - name: Make gradlew executable
+  run: |
+    ls -la android/
+    chmod +x android/gradlew
+    chmod +x android/gradlew.bat
       
       - name: Build Gradle wrapper
         run: |
