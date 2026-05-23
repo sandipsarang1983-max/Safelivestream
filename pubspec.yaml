@@ -1,3 +1,11 @@
+name: safe_live_stream_app
+description: SafeStream AI - Global Live Moderation with ML Vision for 2026.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.6.0 <4.0.0'
+
 dependencies:
   flutter:
     sdk: flutter
@@ -27,3 +35,14 @@ dependencies:
   in_app_purchase_storekit: ^0.3.14
   cupertino_icons: ^1.0.8
   uuid: ^4.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/global_moderation_config.json
+    - assets/vision_trigger_list.json
