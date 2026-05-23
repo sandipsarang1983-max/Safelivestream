@@ -19,11 +19,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.7'
-          
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -32,8 +27,13 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
       
-      - name: Build APK
-        run: flutter build apk --release --split-per-abi
+      - name: Build APK with Gradle 8.7
+        run: |
+          cd android
+          # Explicitly ensure the wrapper is 8.7 and use it for the build
+          ./gradlew wrapper --gradle-version 8.7
+          chmod +x gradlew
+          ./gradlew assembleRelease
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m"
           
