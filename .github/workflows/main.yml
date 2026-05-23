@@ -19,6 +19,12 @@ jobs:
           flutter-version: '3.44.0'
       - name: Install Dependencies
         run: flutter pub get
+      
+      # FIX: Regenerate the Gradle Wrapper before building
+      - name: Regenerate Gradle Wrapper
+        working-directory: android
+        run: ./gradlew wrapper --gradle-version 8.7
+        
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
         env:
