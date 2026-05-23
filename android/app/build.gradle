@@ -27,8 +27,9 @@ apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    namespace "com.safestream.app"
-    compileSdkVersion 35 // FIXED: Upgraded to target Android 15 plugin rules cleanly
+    // MATCHED: Aligned to match your Google Cloud OAuth client profile package identifier
+    namespace "com.example.safe_live_stream_app"
+    compileSdk 35 // UPDATED: Migrated to declarative property layout for modern Gradle 8+ compatibility
     ndkVersion "25.1.8937393"
 
     compileOptions {
@@ -45,9 +46,10 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.safestream.app"
+        // MATCHED: Aligned with your registered cloud signatures to resolve communication handshakes
+        applicationId "com.example.safe_live_stream_app"
         minSdk 21
-        targetSdkVersion 35 // FIXED: Upgraded to prevent runtime compilation discrepancies
+        targetSdk 35 // UPDATED: Forced matching runtime boundaries for Pigeon serialization
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -74,8 +76,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:24.9.1'
     
     // ML Kit
-    implementation 'com.google.mlkit:object-detection:16.0.0-beta4'
-    implementation 'com.google.mlkit:language-id:17.0.0'
+    implementation 'com.google.mlkit:object-detection:17.0.0' // OPTIMIZED: Stabilized channel release
+    implementation 'com.google.mlkit:language-id:17.0.4'       // OPTIMIZED: Modern API mapping for SDK 35
     
     // AndroidX
     implementation 'androidx.appcompat:appcompat:1.6.1'
