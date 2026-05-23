@@ -23,9 +23,7 @@ jobs:
           flutter-version: '3.24.x'
 
       - name: Install Dependencies
-        run: |
-          flutter pub clean
-          flutter pub get
+        run: flutter pub get
 
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
