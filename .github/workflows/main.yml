@@ -37,9 +37,11 @@ jobs:
           rm -f gradle/wrapper/gradle-wrapper.jar
           gradle wrapper --gradle-version 8.7
 
-      # Step 3: FIX - Build a debug or un-signed test release to prevent Keystore Not Found crashes
+      # Step 3: FIX - Force global override of the cached Kotlin Plugin
       - name: Build APK
         run: flutter build apk --debug --no-tree-shake-icons -t lib/main.dart
+        env:
+          KOTLIN_VERSION: "1.9.24"
           
       # Step 4: Upload the compiled test artifact
       - name: Upload Artifact
