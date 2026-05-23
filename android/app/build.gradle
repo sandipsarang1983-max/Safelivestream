@@ -1,7 +1,10 @@
 android {
+    // Ensure namespace is set for newer Flutter versions
+    namespace "com.example.safe_live_stream_app"
+    compileSdk 35 // Updated to latest Android API target
+
     signingConfigs {
         release {
-            // Ensure these names match your environment variables
             storeFile file('upload-keystore.jks')
             storePassword System.getenv("KEYSTORE_PASSWORD")
             keyAlias System.getenv("KEY_ALIAS")
@@ -10,7 +13,6 @@ android {
     }
     buildTypes {
         release {
-            // Use the specific 'release' config defined above
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
