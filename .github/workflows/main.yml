@@ -1,11 +1,7 @@
 name: Build Mobile Apps
-
 on:
   push:
     branches: [ main ]
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-apk:
@@ -13,176 +9,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Force Overwrite Clean Pubspec
-        run: |
-          cat << 'EOF' > pubspec.yaml
-          name: safe_live_stream_app
-          description: SafeStream AI - Global Live Moderation with ML Vision for 2026.
-          publish_to: 'none'
-          version: 1.0.0+1
-
-          environment:
-            sdk: '>=3.0.0 <4.0.0'
-
-          dependencies:
-            flutter:
-              sdk: flutter
-            firebase_core: ^2.24.0
-            firebase_auth: ^4.14.0
-            cloud_firestore: ^4.14.0
-            google_sign_in: ^6.2.1
-            
-            google_mlkit_object_detection: ^0.13.0
-            google_mlkit_commons: ^0.7.1
-            google_mlkit_language_id: ^0.13.0
-            
-            camera: ^0.10.5
-            image_picker: ^1.0.4
-            http: ^1.1.0
-            dio: ^5.3.0
-            flutter_material_color_picker: ^1.2.0
-            intl: ^0.19.0
-            crypto: ^3.0.3
-            encrypt: ^5.0.3
-            in_app_purchase: ^3.2.0
-            in_app_purchase_android: ^0.3.6
-            in_app_purchase_storekit: ^0.3.14
-            cupertino_icons: ^1.0.2
-            uuid: ^4.0.0
-
-          dependency_overrides:
-            google_mlkit_commons: ^0.7.1
-
-          dev_dependencies:
-            flutter_test:
-              sdk: flutter
-            flutter_lints: ^3.0.0
-
-          flutter:
-            uses-material-design: true
-            assets:
-              - assets/global_moderation_config.json
-              - assets/vision_trigger_list.json
-          EOF
-
-      - name: Set up Java Development Kit
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Flutter Environment
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.24.x' 
-          architecture: x64
+          flutter-version: '3.24.x'
 
-      - name: Patch Missing Async Import in Source Code
-        run: |
-          if [ -f "lib/services/iap_service.dart" ]; then
-            echo "import 'dart:async';" | cat - lib/services/iap_service.dart > temp && mv temp lib/services/iap_service.dart
-          fi
-
-      - name: Create Missing Placeholder Asset Files
-        run: |
-          mkdir -p assets
-          echo "{}" > assets/global_moderation_config.json
-          echo "[]" > assets/vision_trigger_list.json
-
-      # Backs up your custom config file if it exists
-      - name: Backup Firebase Configuration
-        run: |
-          if [ -f "android/app/google-services.json" ]; then
-            cp android/app/google-services.json ./google-services.json.bak
-          fi
-
-      - name: Regenerate Native Android Project Tooling
-        run: |
-          rm -rf android
-          flutter create . --platforms=android --project-name=safe_live_stream_app
-
-      - name: Clear Disrupted Cloud Build Cache
-        run: flutter clean
-
-      - name: Fetch Core Dependencies (Post-Recreation)
+      - name: Install Dependencies
         run: flutter pub get
-      
-      # --- ANDROID BUILD STAGE ---
-      - name: Create default debug keystore
-        run: |
-          # FIXED: Create directories explicitly to bridge paths between Keytool output maps and Gradle inputs
-          mkdir -p ~/.android
-          mkdir -p /home/runner/.config/.android
-          
-          # Inject the persistent key directly into the framework directory container
-          keytool -genkey -v -keystore /home/runner/.config/.android/debug.keystore -storepass android -alias AndroidDebugKey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-          
-          # Maintain secondary fallback reference string layout
-          cp /home/runner/.config/.android/debug.keystore ~/.android/debug.keystore
 
-      - name: Inject Android Target SDK and Firebase Build Flags
-        run: |
-          # 1. Safely extract the default flutter.sdk path before updating local.properties
-          FLUTTER_PATH=$(grep 'flutter.sdk' android/local.properties | cut -d'=' -f2)
-          
-          # 2. Recreate local.properties cleanly with SDK flags and include the extracted flutter.sdk path
-          echo "flutter.sdk=$FLUTTER_PATH" > android/local.properties
-          echo "flutter.compileSdkVersion=35" >> android/local.properties
-          echo "flutter.targetSdkVersion=35" >> android/local.properties
-          echo "flutter.minSdkVersion=21" >> android/local.properties
-          
-          # 3. Inject Google Services configuration file
-          mkdir -p android/app
-          if [ -f "./google-services.json.bak" ]; then
-            cp ./google-services.json.bak android/app/google-services.json
-          else
-            echo '{"project_info":{"project_number":"12345","project_id":"mock-id","storage_bucket":"://appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123:android:123","android_client_info":{"package_name":"com.example.safe_live_stream_app"}},"api_key":[{"current_key":"mock_key"}],"services":{"appinvite_service":{"status":1}}}]}' > android/app/google-services.json
-          fi
-          
-          # 4. Format settings.gradle with corrected repository definitions
-          cat << 'EOF' > android/settings.gradle
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-              def flutterSdkPath = {
-                  def properties = new Properties()
-                  def propertiesFile = new File(settingsDir, "local.properties")
-                  if (propertiesFile.exists()) {
-                      propertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
-                  }
-                  def sdkPath = properties.getProperty("flutter.sdk")
-                  assert sdkPath != null, "flutter.sdk not set in local.properties"
-                  return sdkPath
-              }()
+      - name: Build APK
+        run: flutter build apk --release --no-tree-shake-icons
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-              includeBuild("${flutterSdkPath}/packages/flutter_tools/gradle")
-          }
-
-          plugins {
-              id "dev.flutter.flutter-plugin-loader" version "1.0.0"
-              id "com.android.application" version "8.1.0" apply false
-              id "org.jetbrains.kotlin.android" version "1.8.22" apply false
-              id "com.google.gms.google-services" version "4.4.1" apply false
-          }
-
-          include ":app"
-          EOF
-
-          # 5. Safely apply the plugin at the bottom of the application build file
-          echo "apply plugin: 'com.google.gms.google-services'" >> android/app/build.gradle
-
-      - name: Build APK and Extract Keys
-        run: |
-          cd android
-          ./gradlew signingReport
-          cd ..
-          flutter build apk --release --no-tree-shake-icons
-      
-      - name: Publish Android Artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SafeLive-APK
