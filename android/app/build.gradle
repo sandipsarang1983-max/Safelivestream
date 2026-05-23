@@ -5,8 +5,8 @@ plugins {
 }
 
 android {
-    namespace "com.example.safe_live_stream_app" // Change to your actual package name
-    compileSdk 34 // Stable for current AGP versions
+    namespace "com.example.safe_live_stream_app"
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.safe_live_stream_app"
@@ -14,8 +14,6 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -27,21 +25,18 @@ android {
         jvmTarget = '17'
     }
 
+    packagingOptions {
+        // Essential for preventing duplicate native library errors
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
+    }
+
     buildTypes {
         release {
-            // Enables code shrinking, obfuscation, and optimization
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+            minifyEnabled false 
+            shrinkResources false
         }
     }
-
-    // Required for modern Flutter apps to handle build features
-    buildFeatures {
-        buildConfig true
-    }
-}
-
-flutter {
-    source '../..'
 }
