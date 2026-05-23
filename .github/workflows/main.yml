@@ -30,14 +30,14 @@ jobs:
           gradle-version: 8.7
           validate-wrappers: false
 
-      # Step 2: Regenerate wrapper structure natively
+      # Step 2: Regenerate wrapper structure natively and purge the broken local bin file
       - name: Purge Corrupt Wrapper Jar
         run: |
           cd android
           rm -f gradle/wrapper/gradle-wrapper.jar
           gradle wrapper --gradle-version 8.7
 
-      # Step 3: Explicitly define target to build the APK
+      # Step 3: Run the production Flutter compilation build
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons -t lib/main.dart
         env:
