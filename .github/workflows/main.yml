@@ -27,10 +27,10 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
       
-      - name: Force Gradle Wrapper Generation
+      - name: Regenerate Gradle Wrapper
         run: |
           cd android
-          # This command regenerates the wrapper jar and properties files
+          # This forces Gradle to recreate the missing .jar and .properties files
           gradle wrapper --gradle-version 8.7
           chmod +x gradlew
       
