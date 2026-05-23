@@ -35,11 +35,10 @@ jobs:
           echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
           echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
           
-          # Download the official wrapper JAR (The file causing the error)
-          # We use a direct link to a verified 8.7 gradle-wrapper.jar
-          wget https://raw.githubusercontent.com/gradle/gradle/v8.7/subprojects/wrapper-shared/src/main/resources/gradle-wrapper.jar -O gradle/wrapper/gradle-wrapper.jar
+          # Download the official wrapper JAR (Updated URL path for Gradle 8.7+)
+          wget https://githubusercontent.com -O gradle/wrapper/gradle-wrapper.jar
           
-          # Ensure execution permissions
+          # Ensure execution permissions on the wrapper script
           chmod +x gradlew
         
       - name: Build APK
