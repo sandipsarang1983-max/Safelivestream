@@ -1,35 +1,47 @@
-buildscript {
-    // FIX: Upgraded to 2.0.21 to fully resolve the BaseVariant class decorator crash with AGP 8.5+
-    ext.kotlin_version = '2.0.21' 
-    repositories {
-        google()
-        mavenCentral()
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace "com.example.safe_live_stream_app" // Change to your actual package name
+    compileSdk 34 // Stable for current AGP versions
+
+    defaultConfig {
+        applicationId "com.example.safe_live_stream_app"
+        minSdk 23
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-    dependencies {
-        // KEEP: Maintained your 8.5.0 configuration
-        classpath 'com.android.tools.build:gradle:8.5.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        // Upgraded Google Services for current Firebase requirements
-        classpath 'com.google.gms:google-services:4.4.2'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    buildTypes {
+        release {
+            // Enables code shrinking, obfuscation, and optimization
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // Required for modern Flutter apps to handle build features
+    buildFeatures {
+        buildConfig true
     }
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
-rootProject.buildDir = '../build'
-subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(':app')
-}
-
-// FIX: Modernized task registration syntax required by Gradle 8.7+ toolchains
-tasks.register("clean", Delete) {
-    delete rootProject.buildDir
+flutter {
+    source '../..'
 }
