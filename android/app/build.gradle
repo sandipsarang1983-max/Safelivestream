@@ -2,42 +2,20 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    id "com.google.gms.google-services" // Required for Firebase
 }
 
 android {
-    namespace "com.example.safe_live_stream_app"
-    compileSdk 35 // Targeting Android 15 (API 35)
+    namespace "com.example.safe_live_stream_app" // Change to your actual package name
+    compileSdk 34 // Stable for current AGP versions
 
     defaultConfig {
         applicationId "com.example.safe_live_stream_app"
-        minSdk 21
-        targetSdk 35 // Must match compileSdk for Play Store compliance
+        minSdk 23
+        targetSdk 34
         versionCode 1
         versionName "1.0.0"
-    }
 
-    signingConfigs {
-        release {
-            storeFile file('upload-keystore.jks')
-            storePassword System.getenv("KEYSTORE_PASSWORD")
-            keyAlias System.getenv("KEY_ALIAS")
-            keyPassword System.getenv("KEY_PASSWORD")
-        }
-    }
-
-    buildTypes {
-        release {
-            // FIX: Bypasses file-not-found crashes by falling back to debug signature profiles
-            if (file('upload-keystore.jks').exists()) {
-                signingConfig signingConfigs.release
-            } else {
-                signingConfig signingConfigs.debug
-            }
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -48,8 +26,22 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
+
+    buildTypes {
+        release {
+            // Enables code shrinking, obfuscation, and optimization
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // Required for modern Flutter apps to handle build features
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 flutter {
-    source "../.."
+    source '../..'
 }
