@@ -17,6 +17,7 @@ android {
         versionName "1.0.0"
     }
 
+    // FIX: Positioned signingConfigs safely ABOVE buildTypes to avoid evaluation sequence errors
     signingConfigs {
         release {
             storeFile file('upload-keystore.jks')
@@ -35,8 +36,18 @@ android {
         }
     }
 
+    // FIX: Explicit Java 17 compatibility mapping required by AGP 8.5+ and Gradle 8.7
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+// FIX: Added structural Flutter source link declaration to register your code assets correctly
+flutter {
+    source "../.."
 }
