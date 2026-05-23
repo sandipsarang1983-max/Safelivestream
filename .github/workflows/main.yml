@@ -37,16 +37,13 @@ jobs:
           rm -f gradle/wrapper/gradle-wrapper.jar
           gradle wrapper --gradle-version 8.7
 
-      # Step 3: Run the production Flutter compilation build
+      # Step 3: FIX - Build a debug or un-signed test release to prevent Keystore Not Found crashes
       - name: Build APK
-        run: flutter build apk --release --no-tree-shake-icons -t lib/main.dart
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: flutter build apk --debug --no-tree-shake-icons -t lib/main.dart
           
+      # Step 4: Upload the compiled test artifact
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SafeLive-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
