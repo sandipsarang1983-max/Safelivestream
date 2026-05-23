@@ -10,16 +10,16 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # Firebase (Current stable versions)
+  # Firebase (Compatible with Dart 3.6.0)
   firebase_core: ^4.9.0
   firebase_auth: ^6.5.1
   cloud_firestore: ^6.4.1
   google_sign_in: ^6.2.1
 
-  # ML Kit
-  google_mlkit_object_detection: ^0.13.1
-  google_mlkit_commons: ^0.11.1
-  google_mlkit_language_id: ^0.13.1
+  # ML Kit (Downgraded to 0.12.0 series for Dart 3.6.0 compatibility)
+  google_mlkit_object_detection: ^0.12.0
+  google_mlkit_commons: ^0.7.0
+  google_mlkit_language_id: ^0.12.0
 
   camera: ^0.10.5
   image_picker: ^1.0.4
