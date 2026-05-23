@@ -10,10 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # Firebase - Synchronized versions for 2026
-  firebase_core: ^4.9.0
-  firebase_auth: ^6.5.1
-  cloud_firestore: ^6.4.1
+  # Firebase - Synchronized versions to fix Pigeon type-cast bugs
+  firebase_core: ^3.12.0
+  firebase_auth: ^5.14.0
+  cloud_firestore: ^5.6.0
   google_sign_in: ^6.2.2
 
   # ML Kit
