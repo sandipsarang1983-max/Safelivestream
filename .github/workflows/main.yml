@@ -20,9 +20,18 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
       
-      # FIX: Grant execute permission to gradlew
-      - name: Grant execute permission for gradlew
-        run: chmod +x android/gradlew
+      # FIX: Force a total reset of the Gradle Wrapper
+      - name: Reset Gradle Wrapper
+        run: |
+          cd android
+          # Remove potentially corrupted wrapper files
+          rm -rf gradle/wrapper
+          mkdir -p gradle/wrapper
+          # Download a clean wrapper script and jar
+          wget https://raw.githubusercontent.com/gradle/gradle/v8.7/gradle/wrapper/gradle-wrapper.properties -O gradle/wrapper/gradle-wrapper.properties
+          # We use the gradle command to populate the JAR based on the properties file
+          gradle wrapper --gradle-version 8.7
+          chmod +x gradlew
         
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
