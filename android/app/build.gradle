@@ -1,7 +1,21 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services" // Required for Firebase
+}
+
 android {
-    // Ensure namespace is set for newer Flutter versions
     namespace "com.example.safe_live_stream_app"
-    compileSdk 35 // Updated to latest Android API target
+    compileSdk 35 // Targeting Android 15 (API 35)
+
+    defaultConfig {
+        applicationId "com.example.safe_live_stream_app"
+        minSdk 21
+        targetSdk 35 // Must match compileSdk for 2026 Play Store compliance
+        versionCode 1
+        versionName "1.0.0"
+    }
 
     signingConfigs {
         release {
@@ -11,6 +25,7 @@ android {
             keyPassword System.getenv("KEY_PASSWORD")
         }
     }
+
     buildTypes {
         release {
             signingConfig signingConfigs.release
@@ -18,5 +33,10 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
