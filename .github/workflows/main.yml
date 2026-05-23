@@ -19,6 +19,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+          
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -26,13 +31,6 @@ jobs:
           
       - name: Install Dependencies
         run: flutter pub get
-      
-      - name: Regenerate Gradle Wrapper
-        run: |
-          cd android
-          # This forces Gradle to recreate the missing .jar and .properties files
-          gradle wrapper --gradle-version 8.7
-          chmod +x gradlew
       
       - name: Build APK
         run: flutter build apk --release --split-per-abi
