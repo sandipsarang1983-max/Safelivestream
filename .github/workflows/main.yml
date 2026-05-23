@@ -3,8 +3,6 @@ name: Build Mobile Apps
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build-apk:
@@ -12,42 +10,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Set up Java
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      
-      - name: Set up Flutter
+          
+      - name: Set up Flutter 3.44.0
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           flutter-version: '3.44.0'
-      
-      - name: Install Dependencies
-        run: flutter pub get
-      
-      - name: Fix Gradle Permissions
-        run: chmod +x android/gradlew
-
-      # Standard way to ensure the wrapper is set up correctly
-      - name: Validate Gradle Wrapper
+          
+      - name: Clean and Get Dependencies
         run: |
-          cd android
-          ./gradlew --version
-          cd ..
-
-      # Build APK using release mode for a proper test
-      # Using --release to verify signing configs and minification
+          flutter clean
+          flutter pub get
+      
       - name: Build APK
         run: flutter build apk --release --split-per-abi
         env:
-          # This helps avoid OOM errors on smaller runners
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m"
-      
+          
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SafeLive-APK
           path: build/app/outputs/flutter-apk/*.apk
-          retention-days: 7
