@@ -1,14 +1,13 @@
 buildscript {
-    // Synchronized with CI environment (1.9.24) to avoid toolchain mismatches
-    ext.kotlin_version = '1.9.24' 
+    ext.kotlin_version = '1.9.24'
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.5.0'
+        // Use a stable AGP version
+        classpath 'com.android.tools.build:gradle:8.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.4.2'
     }
 }
 
@@ -16,17 +15,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        // Added standard JitPack repository which is required by many Flutter plugins
-        maven { url 'https://jitpack.io' }
+        maven { url "https://jitpack.io" } // Add this if you use custom libraries
     }
-}
-
-rootProject.buildDir = '../build'
-subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-    project.evaluationDependsOn(':app')
-}
-
-tasks.register("clean", Delete) {
-    delete rootProject.buildDir
 }
