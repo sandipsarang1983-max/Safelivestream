@@ -7,46 +7,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+          
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           flutter-version: '3.44.0'
+          
       - name: Install Dependencies
         run: flutter pub get
       
-      # FIX: Force repair the Gradle Wrapper
-      - name: Repair Gradle Wrapper
-        run: |
-          cd android
-          # Clean up any existing broken files
-          rm -rf gradle/wrapper
-          mkdir -p gradle/wrapper
-          
-          # Create properties file
-          echo "distributionBase=GRADLE_USER_HOME" > gradle/wrapper/gradle-wrapper.properties
-          echo "distributionPath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
-          echo "distributionUrl=https\://services.gradle.org/gradle-8.7-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
-          echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
-          echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
-          
-          # Download the official wrapper JAR (Updated URL path for Gradle 8.7+)
-          wget https://githubusercontent.com -O gradle/wrapper/gradle-wrapper.jar
-          
-          # Ensure execution permissions on the wrapper script
-          chmod +x gradlew
-        
+      # FIX: Natively generate the Gradle Wrapper files without web downloads
+      - name: Setup and Repair Gradle Wrapper
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.7
+          build-root-directory: android
+
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
