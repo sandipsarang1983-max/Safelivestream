@@ -20,15 +20,9 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
       
-      # FIX: Force download/reset the Gradle wrapper entirely
-      - name: Reset Gradle Wrapper
-        run: |
-          cd android
-          rm -rf gradle/wrapper
-          mkdir -p gradle/wrapper
-          # Re-initialize the wrapper to ensure all files are created correctly
-          ./gradlew wrapper --gradle-version 8.7 --distribution-type all
-          chmod +x gradlew
+      # FIX: Grant execute permission to gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x android/gradlew
         
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
