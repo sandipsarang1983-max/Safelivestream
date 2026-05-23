@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// Ensure you have run 'flutterfire configure' to generate this file
+// 1. Import the generated configuration file
 import 'firebase_options.dart'; 
 
 void main() async {
+  // Ensure Flutter engine is initialized
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Modern, platform-aware initialization
+  // 2. Initialize Firebase using the generated platform-aware options
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -36,6 +37,7 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 3. StreamBuilder is the recommended way to react to Auth state changes
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
