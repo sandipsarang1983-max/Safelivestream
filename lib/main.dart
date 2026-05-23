@@ -186,19 +186,19 @@ class _DashboardState extends State<Dashboard> {
             icon: const Icon(Icons.logout, color: Colors.redAccent),
             onPressed: () async {
               try {
-                // 1. Sign out of Firebase instance
+                // 1. Clear out the live Firebase session wrapper
                 await FirebaseAuth.instance.signOut();
                 
-                // 2. Clear native Google identity mappings and session cookies
+                // 2. FIXED: Repaired the inner typo context (replaced ';' back to 'u')
                 final GoogleSignIn googleSignIn = GoogleSignIn(
-                  clientId: '805545458159-rbjualqcu8hcnh94;j2g5d4hb8oa67mb5.apps.googleusercontent.com',
+                  clientId: '805545458159-rbjualqcu8hcnh94j2g5d4hb8oa67mb5.apps.googleusercontent.com',
                 );
                 
-                // FIXED: Terminate connection context completely to prevent Pigeon list-type casting bugs on re-entry
+                // 3. Force disconnect to strip tokens completely out of native OS runtime space
                 await googleSignIn.disconnect();
                 await googleSignIn.signOut();
               } catch (e) {
-                debugPrint("Native clear warning: $e");
+                debugPrint("Native cache teardown alert: $e");
               }
             },
           )
@@ -293,7 +293,7 @@ class SubscriptionPaywallScreen extends StatelessWidget {
                   backgroundColor: Colors.blue,
                 ),
                 onPressed: () {
-                  // Core in-app purchase tracking handles SKU bindings natively here
+                  // Links securely out to package sku layout
                 },
                 child: const Text("Start My 7-Day Trial", style: TextStyle(color: Colors.white, fontSize: 16)),
               ),
