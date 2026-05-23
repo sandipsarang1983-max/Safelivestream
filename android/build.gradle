@@ -1,11 +1,12 @@
 buildscript {
-    ext.kotlin_version = '1.9.0' // Updated for compatibility
+    // FIX: Upgraded from 1.9.0 to 1.9.24 to prevent the 'BaseVariant' class decorator crash with AGP 8.5
+    ext.kotlin_version = '1.9.24' 
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        // Upgraded to Gradle 8.5+ compatibility
+        // KEEP: Maintained your 8.5.0 configuration
         classpath 'com.android.tools.build:gradle:8.5.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // Upgraded Google Services for current Firebase requirements
@@ -28,6 +29,7 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
-task clean(type: Delete) {
+// FIX: Modernized task registration syntax required by Gradle 8.7+ toolchains
+tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
