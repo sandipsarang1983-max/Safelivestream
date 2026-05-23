@@ -23,23 +23,23 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
       
-      # Step 1: Provision Gradle 8.7 tools via the official action
+      # Step 1: Provision Clean Gradle Tools
       - name: Setup Gradle Environment
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 8.7
           validate-wrappers: false
 
-      # FIX STEP: Delete the corrupt wrapper jar and regenerate a flawless one using our live environment
+      # Step 2: Regenerate wrapper structure natively
       - name: Purge Corrupt Wrapper Jar
         run: |
           cd android
           rm -f gradle/wrapper/gradle-wrapper.jar
           gradle wrapper --gradle-version 8.7
 
-      # Step 3: Run the production Flutter compilation build
+      # Step 3: Explicitly define target to build the APK
       - name: Build APK
-        run: flutter build apk --release --no-tree-shake-icons
+        run: flutter build apk --release --no-tree-shake-icons -t lib/main.dart
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
