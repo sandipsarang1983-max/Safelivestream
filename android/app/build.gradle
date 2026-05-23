@@ -1,3 +1,22 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services" // Required for Firebase
+}
+
+android {
+    namespace "com.example.safe_live_stream_app"
+    compileSdk 35 // Targeting Android 15 (API 35)
+
+    defaultConfig {
+        applicationId "com.example.safe_live_stream_app"
+        minSdk 21
+        targetSdk 35 // Must match compileSdk for Play Store compliance
+        versionCode 1
+        versionName "1.0.0"
+    }
+
     signingConfigs {
         release {
             storeFile file('upload-keystore.jks')
@@ -9,7 +28,7 @@
 
     buildTypes {
         release {
-            // FIX: Fallback to debug keys if your physical production JKS file doesn't exist on the runner
+            // FIX: Bypasses file-not-found crashes by falling back to debug signature profiles
             if (file('upload-keystore.jks').exists()) {
                 signingConfig signingConfigs.release
             } else {
@@ -20,3 +39,17 @@
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+flutter {
+    source "../.."
+}
