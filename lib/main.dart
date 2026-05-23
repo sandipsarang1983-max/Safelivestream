@@ -77,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Colors.redAccent, // FIXED: Removed compile-breaking redByzantine variable completely
+          backgroundColor: Colors.redAccent,
           content: Text("Authentication Failed: $error"),
         ),
       );
@@ -165,11 +165,9 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _checkSubscriptionStatus() async {
-    // Intercepts and checks subscription matrix records
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
       setState(() {
-        // NOTE: Set this to false explicitly if you want to preview the Paywall Screen block!
         _hasAccess = true; 
         _isLoading = false;
       });
@@ -191,12 +189,10 @@ class _DashboardState extends State<Dashboard> {
       appBar: AppBar(
         title: const Text('Moderation Dashboard'),
         actions: [
-          // LOGOUT ACTION: Safely wipes token handshakes from storage across both modules
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.redAccent),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              // FIXED: Explicitly scoped the logout listener configuration to clear token mappings
               await GoogleSignIn(
                 clientId: '805545458159-rbjualqcu8hcnh94j2g5d4hb8oa67mb5.apps.googleusercontent.com',
               ).signOut();
@@ -261,3 +257,47 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
   }
+}
+
+class SubscriptionPaywallScreen extends StatelessWidget {
+  const SubscriptionPaywallScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.star, size: 80, color: Colors.amber),
+              const SizedBox(height: 16),
+              const Text(
+                "Unlock Live Moderation",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                "Access all core filters completely free for your first 1 week trial. Followed by a continuous plan at just \$1.00 USD / month.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                  backgroundColor: Colors.blue,
+                ),
+                onPressed: () {
+                  // Links out directly to your in_app_purchase package SKU mappings
+                },
+                child: const Text("Start My 7-Day Trial", style: TextStyle(color: Colors.white, fontSize: 16)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
