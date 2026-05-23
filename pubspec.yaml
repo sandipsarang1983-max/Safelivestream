@@ -4,45 +4,34 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '^3.5.0'
+  sdk: '>=3.6.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
 
-  # Firebase & Authentication (Updated to current stable FlutterFire versions)
+  # Firebase (Current stable versions)
   firebase_core: ^4.9.0
   firebase_auth: ^6.5.1
   cloud_firestore: ^6.4.1
   google_sign_in: ^6.2.1
 
-  # ML Kit (All aligned to 0.13.x series for dependency compatibility)
-  google_mlkit_object_detection: ^0.12.0
-  google_mlkit_commons: ^0.7.0
-  google_mlkit_language_id: ^0.12.0
+  # ML Kit
+  google_mlkit_object_detection: ^0.13.1
+  google_mlkit_commons: ^0.11.1
+  google_mlkit_language_id: ^0.13.1
 
-  # Camera & Media
   camera: ^0.10.5
   image_picker: ^1.0.4
-
-  # Networking
   http: ^1.1.0
   dio: ^5.3.0
-
-  # UI & Material
   flutter_material_color_picker: ^1.2.0
   intl: ^0.19.0
-
-  # Encryption
   crypto: ^3.0.3
   encrypt: ^5.0.3
-
-  # In-App Purchases
   in_app_purchase: ^3.2.0
   in_app_purchase_android: ^0.3.6
   in_app_purchase_storekit: ^0.3.14
-
-  # Other
   cupertino_icons: ^1.0.2
   uuid: ^4.0.0
 
