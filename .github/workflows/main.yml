@@ -23,15 +23,12 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
       
-      # FIX: Target the android folder using working-directory and turn off strict wrapper validation
+      # FIX: Turn off strict validation so the action can cleanly set up Gradle 8.7
       - name: Setup and Repair Gradle Wrapper
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 8.7
           validate-wrappers: false
-        defaults:
-          run:
-            working-directory: android
 
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
