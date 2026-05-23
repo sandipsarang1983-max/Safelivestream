@@ -3,6 +3,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+// FIXED: Define a clean, top-level global instance. 
+// On Android, leaving it empty forces the native layer to read straight 
+// from your google-services.json, preventing the Pigeon list-casting error.
+final GoogleSignIn _googleSignIn = GoogleSignIn();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -55,10 +60,8 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        clientId: '805545458159-rbjualqcu8hcnh94j2g5d4hb8oa67mb5.apps.googleusercontent.com',
-      );
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      // FIXED: Use the clean global instance instead of passing an inline Web Client ID string
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       
       if (googleUser != null) {
         final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -186,17 +189,12 @@ class _DashboardState extends State<Dashboard> {
             icon: const Icon(Icons.logout, color: Colors.redAccent),
             onPressed: () async {
               try {
-                // 1. Clear out the live Firebase session wrapper
+                // 1. Terminate Firebase session cleanly
                 await FirebaseAuth.instance.signOut();
                 
-                // 2. FIXED: Repaired the inner typo context (replaced ';' back to 'u')
-                final GoogleSignIn googleSignIn = GoogleSignIn(
-                  clientId: '805545458159-rbjualqcu8hcnh94j2g5d4hb8oa67mb5.apps.googleusercontent.com',
-                );
-                
-                // 3. Force disconnect to strip tokens completely out of native OS runtime space
-                await googleSignIn.disconnect();
-                await googleSignIn.signOut();
+                // 2. FIXED: Clear tokens using the unified global instance
+                await _googleSignIn.disconnect();
+                await _googleSignIn.signOut();
               } catch (e) {
                 debugPrint("Native cache teardown alert: $e");
               }
@@ -292,9 +290,7 @@ class SubscriptionPaywallScreen extends StatelessWidget {
                   minimumSize: const Size(double.infinity, 50),
                   backgroundColor: Colors.blue,
                 ),
-                onPressed: () {
-                  // Links securely out to package sku layout
-                },
+                onPressed: () {},
                 child: const Text("Start My 7-Day Trial", style: TextStyle(color: Colors.white, fontSize: 16)),
               ),
             ],
