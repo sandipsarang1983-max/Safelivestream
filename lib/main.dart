@@ -185,10 +185,21 @@ class _DashboardState extends State<Dashboard> {
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.redAccent),
             onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              await GoogleSignIn(
-                clientId: '805545458159-rbjualqcu8hcnh94j2g5d4hb8oa67mb5.apps.googleusercontent.com',
-              ).signOut();
+              try {
+                // 1. Sign out of Firebase instance
+                await FirebaseAuth.instance.signOut();
+                
+                // 2. Clear native Google identity mappings and session cookies
+                final GoogleSignIn googleSignIn = GoogleSignIn(
+                  clientId: '805545458159-rbjualqcu8hcnh94;j2g5d4hb8oa67mb5.apps.googleusercontent.com',
+                );
+                
+                // FIXED: Terminate connection context completely to prevent Pigeon list-type casting bugs on re-entry
+                await googleSignIn.disconnect();
+                await googleSignIn.signOut();
+              } catch (e) {
+                debugPrint("Native clear warning: $e");
+              }
             },
           )
         ],
