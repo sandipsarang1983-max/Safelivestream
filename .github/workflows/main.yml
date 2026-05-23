@@ -27,12 +27,12 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
       
-      - name: Build APK with Gradle 8.7
+      - name: Grant Execute Permission and Build
         run: |
+          # 1. Fix the permissions for the gradle wrapper
+          chmod +x android/gradlew
+          # 2. Build the APK using the wrapper
           cd android
-          # Explicitly ensure the wrapper is 8.7 and use it for the build
-          ./gradlew wrapper --gradle-version 8.7
-          chmod +x gradlew
           ./gradlew assembleRelease
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m"
