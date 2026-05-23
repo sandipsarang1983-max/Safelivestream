@@ -1,7 +1,11 @@
 name: Build Mobile Apps
+
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
 jobs:
   build-apk:
     runs-on: ubuntu-latest
@@ -13,39 +17,37 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          
+      
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           flutter-version: '3.44.0'
-          
+      
       - name: Install Dependencies
         run: flutter pub get
       
-      # Step 1: Provision Clean Gradle Tools
-      - name: Setup Gradle Environment
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: 8.7
-          validate-wrappers: false
+      - name: Fix Gradle Permissions
+        run: chmod +x android/gradlew
 
-      # Step 2: Regenerate wrapper structure natively and purge the broken local bin file
-      - name: Purge Corrupt Wrapper Jar
+      # Standard way to ensure the wrapper is set up correctly
+      - name: Validate Gradle Wrapper
         run: |
           cd android
-          rm -f gradle/wrapper/gradle-wrapper.jar
-          gradle wrapper --gradle-version 8.7
+          ./gradlew --version
+          cd ..
 
-      # Step 3: FIX - Force global override of the cached Kotlin Plugin
+      # Build APK using release mode for a proper test
+      # Using --release to verify signing configs and minification
       - name: Build APK
-        run: flutter build apk --debug --no-tree-shake-icons -t lib/main.dart
+        run: flutter build apk --release --split-per-abi
         env:
-          KOTLIN_VERSION: "1.9.24"
-          
-      # Step 4: Upload the compiled test artifact
+          # This helps avoid OOM errors on smaller runners
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m"
+      
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SafeLive-APK
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: build/app/outputs/flutter-apk/*.apk
+          retention-days: 7
